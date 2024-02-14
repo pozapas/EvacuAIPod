@@ -5,3 +5,5 @@ openai
 langchain
 langchain_community
 langchain_openai
+faiss-cpu
+faiss-gpu
