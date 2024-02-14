@@ -80,7 +80,7 @@ def chat_with_podcast(openai_key, transcript1=None, podcast_choice=None):
         st.text_area("Transcript", transcript_with_paragraphs, height=300)
         # Split into chunks
         text_splitter = RecursiveCharacterTextSplitter(
-            chunk_size=5000,  # Consider adjusting chunk size based on your needs
+            chunk_size=1000,  
             chunk_overlap=0,
             length_function=len,
         )
