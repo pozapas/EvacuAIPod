@@ -1,0 +1,6 @@
+streamlit
+pandas
+requests
+openai
+langchain
+langchain_community
