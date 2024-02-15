@@ -4,14 +4,16 @@
   <img src="https://github.com/pozapas/EvacuAIPod/blob/master/evacuaipod.png?raw=true" alt="Evacuaipod" style="width: 30%;">
 </p>
 
-EvacuAIPod is an innovative web application designed to enhance the podcast listening experience by integrating AI-powered features. It enables users to transcribe podcasts, engage in interactive conversations with the content, and explore podcasts related to crowd evacuation strategies and emergency preparedness.
+[EvacuAIPod](https://evacuaipod.streamlit.app/) is an innovative web application designed to enhance the podcast listening experience by integrating AI-powered features. It enables users to transcribe podcasts, engage in interactive conversations with the content, and explore podcasts related to crowd evacuation strategies and emergency preparedness.
+
+* [Demo](https://www.youtube.com/watch?v=R0QH5rnfTx)
 
 ## Features
 
 - **Podcast Transcription**: Utilizes OpenAI's Whisper API to transcribe audio content, making it accessible and searchable.
 - **Interactive Chat**: Engages users in conversations with the podcast content, powered by OpenAI's GPT-3 and langchain, providing a unique interactive experience.
 - **Keyword-based Podcast Discovery**: Allows users to find podcasts by searching for specific topics related to crowd evacuation and emergency preparedness.
-
+  
 ## Getting Started
 
 ### Installation (local version)
