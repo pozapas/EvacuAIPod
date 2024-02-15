@@ -1,4 +1,4 @@
-# EvacuAIPod
+# EvacuAIPod: AI-bot for Crowd Evacuation Podcasts
 
 <p align="center">
   <img src="https://github.com/pozapas/EvacuAIPod/blob/master/evacuaipod.png?raw=true" alt="Evacuaipod" style="width: 30%;">
