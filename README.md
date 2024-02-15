@@ -6,7 +6,7 @@
 
 [EvacuAIPod](https://evacuaipod.streamlit.app/) is an innovative web application designed to enhance the podcast listening experience by integrating AI-powered features. It enables users to transcribe podcasts, engage in interactive conversations with the content, and explore podcasts related to crowd evacuation strategies and emergency preparedness.
 
-[Demo](https://www.youtube.com/watch?v=R0QH5rnfTx)
+[![YouTube](https://img.shields.io/badge/YouTube-%23FF0000.svg?style=for-the-badge&logo=YouTube&logoColor=white)](https://www.youtube.com/watch?v=R0QH5rnfTxE)
 
 ## Features
 
