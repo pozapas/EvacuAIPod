@@ -78,7 +78,7 @@ def read_transcript(episode):
 
 
 def chat_with_podcast(openai_key, groq_key, chatbot, transcript1=None, podcast_choice=None):
-    st.write(f"**Chat with the {podcast_choice} podcast**")
+    st.write(f"**Chat with {podcast_choice}**")
     if transcript1:
         st.text_area("Transcript", transcript1, height=300)
         # Split into chunks
