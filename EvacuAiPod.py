@@ -1,4 +1,5 @@
 # langchain version
+import os
 import streamlit as st
 import pandas as pd
 import requests
@@ -10,7 +11,10 @@ from langchain_community.vectorstores import FAISS
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_openai import OpenAI
 from langchain.chains.question_answering import load_qa_chain
-import os
+from langchain_community.embeddings import HuggingFaceEmbeddings
+from langchain_groq import ChatGroq
+
+default_groq_key = st.secrets["groq_key"]
 
 # Function to download the podcast audio file
 def download_audio(url):
@@ -67,40 +71,63 @@ def add_paragraph_breaks(text, sentences_per_paragraph=7):
 
     return '\n\n'.join(paragraphs)
 
+def read_transcript(episode):
+    with open(f"Transcripts/{episode}.txt", 'r', encoding='utf-8') as file_data:
+        transcript = file_data.read()
+    return transcript
 
-def chat_with_podcast(openai_key, transcript1=None, podcast_choice=None):
+
+def chat_with_podcast(openai_key, groq_key, chatbot, transcript1=None, podcast_choice=None):
     st.write(f"**Chat with the {podcast_choice} podcast**")
-    if openai_key and transcript1:
-        temp_dir = tempfile.gettempdir()
-        transcript_file_path = os.path.join(temp_dir, "transcript.txt")
-        with open(transcript_file_path, 'r') as file_data:
-            transcript = file_data.read()
-        
-        transcript_with_paragraphs = add_paragraph_breaks(transcript)
-        st.text_area("Transcript", transcript_with_paragraphs, height=300)
+    if transcript1:
+        st.text_area("Transcript", transcript1, height=300)
         # Split into chunks
         text_splitter = RecursiveCharacterTextSplitter(
-            chunk_size=5000,  # Consider adjusting chunk size based on your needs
+            chunk_size=1000,
             chunk_overlap=0,
             length_function=len,
         )
-        chunks = text_splitter.split_text(transcript)
+        chunks = text_splitter.split_text(transcript1)
 
-        # Create embeddings for chunks
-        embeddings = OpenAIEmbeddings(openai_api_key=openai_key)
-        knowledge_base = FAISS.from_texts(chunks, embeddings)
-        llm = OpenAI(temperature=0, openai_api_key=openai_key)
+        if chatbot in ['Groq (llam3-8B)', 'Groq (gemma-7b)']:
+            if not st.session_state.groq_key_entered and st.session_state.questions_asked > 1:
+                st.error("Please enter your own Groq API key to continue using the service.")
+                return  # Stop further execution until a new key is provided
+            else:
+                groq_key_to_use = groq_key if st.session_state.groq_key_entered else default_groq_key
+        elif chatbot == 'ChatGPT':
+            if not openai_key:
+                st.error("Please enter your OpenAI API key to use ChatGPT.")
+                return  # Stop further execution until a key is provided
+            else:
+                groq_key_to_use = openai_key 
+        
+        if chatbot=='Groq (llam3-8B)':
+            embeddings = HuggingFaceEmbeddings()
+            knowledge_base = FAISS.from_texts(chunks, embeddings)
+            chat = ChatGroq(temperature=0, groq_api_key=groq_key_to_use, model_name="llama3-8b-8192")
+        elif chatbot=='Groq (gemma-7b)':
+            embeddings = HuggingFaceEmbeddings()
+            knowledge_base = FAISS.from_texts(chunks, embeddings)
+            chat = ChatGroq(temperature=0, groq_api_key=groq_key_to_use, model_name="gemma-7b-it")
+        else:
+            embeddings = OpenAIEmbeddings(openai_api_key=openai_key)
+            knowledge_base = FAISS.from_texts(chunks, embeddings)
+            llm = OpenAI(temperature=0, openai_api_key=openai_key)
 
         # User input area using st.text_input for compatibility
         user_input = st.chat_input(placeholder=f"Talk to 🎙️ {podcast_choice}", key='input')
         if user_input:
+            st.session_state.questions_asked += 1
             # Find the most relevant chunks
             docs = knowledge_base.similarity_search(user_input)
-            chain = load_qa_chain(llm, chain_type="stuff")  # Ensure you have the correct chain_type
+            if chatbot=='Groq (llam3-8B)' or chatbot=='Groq (gemma-7b)':
+                chain = load_qa_chain(chat, chain_type="stuff")
+            else:
+                chain = load_qa_chain(llm, chain_type="stuff")
             ai_response = chain.run(input_documents=docs, question=user_input)
             if prompt := user_input: # Prompt for user input and save to chat history
-                                st.session_state.messages.append({"role": "user", "content": prompt})
-
+                st.session_state.messages.append({"role": "user", "content": prompt})
             for message in st.session_state.messages: # Display the prior chat messages
                 with st.chat_message(message["role"]):
                     st.write(message["content"])
@@ -115,12 +142,75 @@ def chat_with_podcast(openai_key, transcript1=None, podcast_choice=None):
     else:
         st.error("Please enter your OpenAI API key and ensure a transcript is available.")
 
+def display_podcasts(df,search_engine):
+    for _, row in df.iterrows():
+        # Generate Listen Notes player embed code for podcasts
+        listen_notes_player = f'<iframe src="{row["Link"]}/embed/" height="180px" width="100%" style="width: 1px; min-width: 100%;" frameborder="0" scrolling="no" loading="lazy"></iframe>'
+
+        # Display podcast information with improved formatting
+        st.markdown(f'**Podcast:** [{row["Podcast"]}]({row["Podcast link"]})')
+        st.markdown(f'**Episode:** {row["Episode"]}')
+        st.markdown(f'**Host:** {row["Host"]} | **Guest(s):** {row["Guest(s)"]}')
+        st.markdown(listen_notes_player, unsafe_allow_html=True)
+        # Keywords handling
+        keywords = row["Tags"].split(';')
+        if search_engine == 'Google Scholar':
+            linked_keywords = [
+                f'[**{keyword.strip()}**](https://scholar.google.com/scholar?q={keyword.strip().replace(" ", "+")}%20(crowd%20evacuation%20OR%20fire%20engineering))'
+                for keyword in keywords if keyword.strip() != ''
+            ]
+        elif search_engine == 'Scopus':
+            linked_keywords = [
+                f'[**{keyword.strip()}**](https://www.scopus.com/results/results.uri?src=s&st1={keyword.strip().replace(" ", "%20")}&sdt=b&sl=58&s=TITLE-ABS-KEY({keyword.strip().replace(" ", "%20")})%20AND%20(TITLE-ABS-KEY(crowd%20AND%20evacuation)%20OR%20TITLE-ABS-KEY(fire%20AND%20engineering)))'
+                for keyword in keywords if keyword.strip() != ''
+            ]
+        
+        # Display keywords
+        keywords_string = ', '.join(linked_keywords)
+        st.markdown(f'**Keywords:** {keywords_string}', unsafe_allow_html=True)
+        st.markdown("---")
+
+def display_youtube_videos(df,search_engine):
+    for _, row in df.iterrows():
+        # Extract YouTube video ID
+        youtube_link = row['Link']
+        # Split the URL by 'watch?v=' and further split by '&' to isolate the video ID
+        youtube_video_id = youtube_link.split('watch?v=')[-1].split('&')[0]
+
+        # Display YouTube video information with improved formatting
+        st.markdown(f'**Title:** {row["Episode"]}')
+        # Form the correct YouTube embed URL
+        youtube_embed_url = f"https://www.youtube.com/watch?v={youtube_video_id}"
+        st.video(youtube_embed_url)
+        # Keywords handling
+        keywords = row["Tags"].split(';')
+        if search_engine == 'Google Scholar':
+            linked_keywords = [
+                f'[**{keyword.strip()}**](https://scholar.google.com/scholar?q={keyword.strip().replace(" ", "+")}%20(crowd%20evacuation%20OR%20fire%20engineering))'
+                for keyword in keywords if keyword.strip() != ''
+            ]
+        elif search_engine == 'Scopus':
+            base_focus = "(crowd AND evacuation) OR (fire AND engineering)"
+            linked_keywords = [
+                f'[**{keyword.strip()}**](https://www.scopus.com/results/results.uri?src=s&st1={keyword.strip().replace(" ", "%20")}&sdt=b&sl=58&s=TITLE-ABS-KEY({keyword.strip().replace(" ", "%20")})%20AND%20(TITLE-ABS-KEY(crowd%20AND%20evacuation)%20OR%20TITLE-ABS-KEY(fire%20AND%20engineering)))'
+                for keyword in keywords if keyword.strip() != ''
+            ]
+        
+        # Display keywords
+        keywords_string = ', '.join(linked_keywords)
+        st.markdown(f'**Keywords:** {keywords_string}', unsafe_allow_html=True)
+        st.markdown("---")
 
 
 def main():
+    # Initialize session state variables
+    if 'groq_key_entered' not in st.session_state:
+        st.session_state.groq_key_entered = False
+    if 'questions_asked' not in st.session_state:
+        st.session_state.questions_asked = 0
     # Set app title and description
     st.set_page_config(page_title="EvacuAIPod", page_icon="🎙️", layout="wide")
-    st.title("EvacuAIPod: AI-bot for Crowd Evacuation Podcasts")
+    st.title("EvacuAIPod: AI-bot for Crowd Evacuation and Fire Engineering Podcasts")
     # Load the CSV file into a DataFrame
     @st.cache_data
     def load_data():
@@ -138,16 +228,31 @@ def main():
     st.sidebar.image("evacuaipod.png", use_column_width=True) 
     # Navigation
     page = st.sidebar.selectbox("Navigate", ["Transcript", "Chat with Podcast"])
+    # Sidebar selection for the search engine
+    search_engine = st.sidebar.selectbox(
+        'Choose scholar search engine:',
+        ('Google Scholar', 'Scopus')
+    )
+    
+    with st.sidebar.expander("**Chatbot model**"):
+        chatbot = st.selectbox('Choose the chatbot model:', ('Groq (llam3-8B)', 'Groq (gemma-7b)', 'ChatGPT'))
+    # Create a text input for the OpenAI key
+    with st.sidebar.expander("**API key**"):
+        st.write('Openai key')
+        openai_key = st.text_input("Enter your OpenAI key:", key="openai_input", type="password")
+        st.write('Groq key')
+        groq_key = st.text_input("Enter your Groq key:", key="groq_input", type="password")
+        if groq_key:
+            st.session_state.groq_key_entered = True
+        if openai_key:
+            st.session_state.openai_key_entered = True
+
     # Add an "About" section in the sidebar
     expander = st.sidebar.expander("**About EvacuAIPod**")
     with expander:
                 expander.write('''
                         EvacuAIPod is an innovative web application that enables users to search and discover podcasts focusing on crowd evacuation strategies. With the power of targeted keyword searches, listeners can effortlessly find and listen to discussions that pique their interest. Beyond just listening, EvacuAIPod offers an interactive experience by allowing users to engage in conversations with the content of the podcasts themselves. This unique feature opens up deeper insights and a more personalized understanding of the crucial topics of AI technology and safety measures. EvacuAIPod is the go-to platform for anyone looking to delve into the world of emergency preparedness and crowd management through the lens of interactive and informative podcast sessions.
                 ''')
-    # Create a text input for the OpenAI key
-    with st.sidebar.expander("**OpenAI key**"):
-        openai_key = st.text_input("Enter your [OpenAI key](https://platform.openai.com/api-keys):", key="openai_input" , type="password")
-
     expander = st.sidebar.expander("**Contact US**")
     with expander:
                 expander.write('''
@@ -155,70 +260,98 @@ def main():
                 ''')
     
     if page == "Transcript":
-        # Filter the DataFrame based on the keywords
         # User input for search keywords
         keywords = st.text_input("**Enter keywords to search for podcasts. Separate multiple keywords with spaces.**")
-        if keywords:
-            search_keywords = keywords.split()
-            filtered_dfs = []  # List to hold DataFrames to concatenate
-            for keyword in search_keywords:
-                matching_df = df[df.apply(lambda x: x.str.contains(keyword, case=False, na=False)).any(axis=1)]
-                filtered_dfs.append(matching_df)
-            filtered_df = pd.concat(filtered_dfs).drop_duplicates()  # Concatenate all matching DataFrames and drop duplicates
+        if 'filtered_df' in st.session_state and not st.session_state.filtered_df.empty and not keywords:
+            # Create two tabs for 'Podcasts' and 'YouTube Videos'
+                tab1, tab2 = st.tabs(["Podcasts", "YouTube Videos"]) 
+                filtered_df = st.session_state.filtered_df             
+                # 'Podcasts' tab
+                with tab1:
+                    # Display podcasts
+                    display_podcasts(filtered_df[filtered_df['Type'] == 'Pod'],search_engine)
 
-            if not filtered_df.empty:
-                # Your existing code for handling the non-empty filtered DataFrame
-                st.session_state.filtered_df = filtered_df
-                for _, row in filtered_df.iterrows():
-                    # Generate Listen Notes player embed code
-                    listen_notes_player = f'<iframe src="{row["Link"]}/embed/" height="180px" width="100%" style="width: 1px; min-width: 100%;" frameborder="0" scrolling="no" loading="lazy"></iframe>'
-                    # Display podcast information with improved formatting
-                    st.markdown(f'**Podcast:** [{row["Podcast"]}]({row["Podcast link"]})')
-                    st.markdown(f'**Episode:** {row["Episode"]}')
-                    st.markdown(f'**Host:** {row["Host"]} | **Guest(s):** {row["Guest(s)"]}')
-                    st.markdown(listen_notes_player, unsafe_allow_html=True)
-                    st.markdown("---")
+                # 'YouTube Videos' tab
+                with tab2:
+                    # Display YouTube videos
+                    display_youtube_videos(filtered_df[filtered_df['Type'] == 'YouTube'],search_engine)
+        else: 
+            if keywords:
+                search_keywords = keywords.split()
+                filtered_dfs = []  # List to hold DataFrames to concatenate
+                for keyword in search_keywords:
+                    matching_df = df[df.apply(lambda x: x.str.contains(keyword, case=False, na=False)).any(axis=1)]
+                    filtered_dfs.append(matching_df)
+                filtered_df = pd.concat(filtered_dfs).drop_duplicates()  # Concatenate all matching DataFrames and drop duplicates
+                
+
+                if not filtered_df.empty:
+                    # Create two tabs for 'Podcasts' and 'YouTube Videos'
+                    tab1, tab2 = st.tabs(["Podcasts", "YouTube Videos"])
+                    st.session_state.filtered_df = filtered_df
+                    st.session_state['filtered_df'] = filtered_df
+                    # 'Podcasts' tab
+                    with tab1:
+                        # Display podcasts
+                        display_podcasts(filtered_df[filtered_df['Type'] == 'Pod'],search_engine)
+
+                    # 'YouTube Videos' tab
+                    with tab2:
+                        # Display YouTube videos
+                        display_youtube_videos(filtered_df[filtered_df['Type'] == 'YouTube'],search_engine)
+
+                else:
+                    st.write("No podcasts or YouTube videos found with the given keyword(s).")
+            
             else:
-                st.write("No podcasts found with the given keyword(s).")
-        else:
-            st.write("")
-
+                st.write("")
+    
         if 'filtered_df' in st.session_state and not st.session_state.filtered_df.empty:
             transcript1=[]
             with st.form(key="podcast_form"):
-                st.write("**Choose a podcast from the list and request a transcript:**")
-                st.write("*Note: The process of creating a transcript can take up to 3 minutes, depending on the duration of the podcast.*")
+                st.subheader("**Transcription**")
+                st.write("**Select content from the list and request its transcript:**")
                 # Create a select box for the podcast using the filtered DataFrame from session state
                 podcast_options = st.session_state.filtered_df["Episode"].tolist()
-                podcast_choice = st.selectbox("Podcast:", podcast_options, key="podcast_select")
-                st.session_state['podcast_choice'] = podcast_choice            
+                podcast_choice = st.selectbox("Title:", podcast_options, key="podcast_select")
+                st.session_state['podcast_choice'] = podcast_choice  # Store podcast choice in session state
                 # Create a submit button
                 submit_button = st.form_submit_button(label="Submit")
                 
                 if submit_button:
                     st.session_state.conversation_history = []
                     st.session_state.messages = []
-                    if openai_key:  
-                        try:
-                            podcast_url = st.session_state.filtered_df.loc[st.session_state.filtered_df['Episode'] == podcast_choice, 'Audio'].iloc[0]
-                            audio_file_path = download_audio(podcast_url)
-                            transcript1 = transcribe_podcast(audio_file_path, openai_key)
-                            st.session_state['transcript1'] = transcript1  # Store transcript in session state
+                    try:
+                        transcript1 = read_transcript(podcast_choice)
+                        
+
+                        # Check if the selected podcast is of type 'Pod'
+                        podcast_type = filtered_df[filtered_df['Episode'] == podcast_choice]['Type'].iloc[0]
+                        if podcast_type == 'Pod':
                             transcript_with_paragraphs = add_paragraph_breaks(transcript1)
-                            st.text_area("Podcast Transcription", transcript_with_paragraphs, height=400)
-                            st.write("*Note: To chat with the selected podcast, use the sidebar to navigate to the 'Chat with Podcast' page.*")
-                        except Exception as e:
-                            st.error(f"An error occurred: {e}")
-                    else:
-                        st.error("Please enter your OpenAI API key.")
+                        else:
+                            transcript_with_paragraphs = transcript1
+
+                        st.session_state['transcript1'] = transcript_with_paragraphs  # Store transcript in session state
+                        st.text_area("Transcription", transcript_with_paragraphs, height=400)
+                        st.write("*Note: To chat with the selected podcast, use the sidebar to navigate to the 'Chat with Podcast' page.*")
+
+                    except Exception as e:
+                        st.error(f"An error occurred: {e}")
+
             # If filtered_df isn't in session state or is empty, display a message
             st.write("")
     elif page == "Chat with Podcast":
-        # Check if 'transcript1' is in session state before calling the function
-        if 'transcript1' in st.session_state:
-            chat_with_podcast(openai_key, st.session_state['transcript1'] , st.session_state['podcast_choice'])
+        if 'filtered_df' in st.session_state and 'podcast_choice' in st.session_state:
+            filtered_df = st.session_state.filtered_df
+            podcast_choice = st.session_state.podcast_choice
+            if 'transcript1' in st.session_state:
+                transcript1 = st.session_state['transcript1']
+                chat_with_podcast(openai_key, groq_key, chatbot, transcript1, podcast_choice)
+            else:
+                st.error("Please transcribe a podcast first.")
         else:
-            st.error("Please transcribe a podcast first.")
+            st.error("Please select a podcast first.")
         
 
 if __name__ == '__main__':
