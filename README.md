@@ -35,9 +35,11 @@
    ```
    
 ## Future Enhancements
-- [ ] Whisper Large V3 for Free Podcast Transcriptions
-- [ ] Add Podcasts from YouTube
-- [ ] User-Selectable Language Models for Embeddings and Chat
+- [x] Whisper Large V3 for Free Podcast Transcriptions
+- [x] Add Podcasts from YouTube
+- [x] User-Selectable Language Models for Embeddings and Chat
+- [ ] Add fire engineering content
+- [ ] Add a subscription form
 
 ## Contributing
 Contributions, issues, and feature requests are welcome. Feel free to check [issues page](https://github.com/pozapas/EvacuAIPod/issues) for open issues or open a new issue.
