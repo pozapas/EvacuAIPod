@@ -246,9 +246,9 @@ def main():
     # Create a text input for the OpenAI key
     with st.sidebar.expander("**API key**"):
         st.write('Openai key')
-        openai_key = st.text_input("Enter your OpenAI key:", key="openai_input", type="password")
+        openai_key = st.text_input("Enter your [OpenAI key](https://platform.openai.com/api-keys):", key="openai_input", type="password")
         st.write('Groq key')
-        groq_key = st.text_input("Enter your Groq key:", key="groq_input", type="password")
+        groq_key = st.text_input("Enter your [Groq key](https://console.groq.com/keys):", key="groq_input", type="password")
         if groq_key:
             st.session_state.groq_key_entered = True
         if openai_key:
