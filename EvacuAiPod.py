@@ -287,7 +287,7 @@ def main():
                     display_youtube_videos(filtered_df[filtered_df['Type'] == 'YouTube'],search_engine)
         else: 
             if keywords:
-                search_keywords = keywords.split()
+                search_keywords = [f'"{keywords}"']
                 filtered_dfs = []  # List to hold DataFrames to concatenate
                 for keyword in search_keywords:
                     matching_df = df[df.apply(lambda x: x.str.contains(keyword, case=False, na=False)).any(axis=1)]
