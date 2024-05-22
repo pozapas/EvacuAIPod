@@ -224,7 +224,7 @@ def main():
     # Load the CSV file into a DataFrame
     @st.cache_data
     def load_data():
-        return pd.read_csv("pod.csv", encoding='utf-8')
+        return pd.read_csv("pod.csv", encoding='latin1')
 
     df = load_data()
     # Initialize conversation history in session state
