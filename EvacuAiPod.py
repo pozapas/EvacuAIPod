@@ -175,8 +175,8 @@ def display_podcasts(df,search_engine):
         
         # Display keywords
         keywords_string = ', '.join(linked_keywords)
-        with st.expander("Keywords"):
-            st.markdown(f'**Keywords:** {keywords_string}', unsafe_allow_html=True)
+        with st.expander("**Keywords**"):
+            st.markdown(f'{keywords_string}', unsafe_allow_html=True)
         st.markdown("---")
 
 def display_youtube_videos(df,search_engine):
