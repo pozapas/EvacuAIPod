@@ -351,7 +351,7 @@ def main():
 
                         st.session_state['transcript1'] = transcript_with_paragraphs  # Store transcript in session state
                         st.text_area("Transcription", transcript_with_paragraphs, height=400)
-                        st.write("*Note: To chat with the selected podcast, use the sidebar to navigate to the 'Chat with Podcast' page.*")
+                        st.write(":rainbow-background[*Note:*] *To chat with the selected podcast, use the sidebar to navigate to the 'Chat with Podcast' page.*")
 
                     except Exception as e:
                         st.error(f"An error occurred: {e}")
