@@ -14,6 +14,7 @@ from langchain.chains.question_answering import load_qa_chain
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_groq import ChatGroq
 
+
 default_groq_key = st.secrets["groq_key"]
 
 # Function to download the podcast audio file
@@ -174,7 +175,8 @@ def display_podcasts(df,search_engine):
         
         # Display keywords
         keywords_string = ', '.join(linked_keywords)
-        st.markdown(f'**Keywords:** {keywords_string}', unsafe_allow_html=True)
+        with st.expander("Keywords"):
+            st.markdown(f'**Keywords:** {keywords_string}', unsafe_allow_html=True)
         st.markdown("---")
 
 def display_youtube_videos(df,search_engine):
