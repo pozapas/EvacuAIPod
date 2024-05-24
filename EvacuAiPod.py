@@ -19,6 +19,7 @@ from langchain_groq import ChatGroq
 
 
 default_groq_key = st.secrets["groq_key"]
+gmail_key = st.secrets["gmail_key"]
 
 # Function to download the podcast audio file
 def download_audio(url):
@@ -215,9 +216,9 @@ def display_youtube_videos(df,search_engine):
         st.markdown("---")
 
 def send_email(name, email, position, feedback):
-    sender_email = "crwdynamics@gmail.com"
+    sender_email = email
     receiver_email = "crwdynamics@gmail.com"
-    password = "eisw noay gzdb zcrt"
+    password = gmail_key
 
     # Create the email
     msg = MIMEMultipart()
@@ -293,13 +294,12 @@ def main():
                 expander.write('''
                         EvacuAIPod is an innovative web application that enables users to search and discover podcasts focusing on crowd evacuation strategies. With the power of targeted keyword searches, listeners can effortlessly find and listen to discussions that pique their interest. Beyond just listening, EvacuAIPod offers an interactive experience by allowing users to engage in conversations with the content of the podcasts themselves. This unique feature opens up deeper insights and a more personalized understanding of the crucial topics of AI technology and safety measures. EvacuAIPod is the go-to platform for anyone looking to delve into the world of emergency preparedness and crowd management through the lens of interactive and informative podcast sessions.
                 ''')
-    expander = st.sidebar.expander("**Contact US**")
-    with expander:
-                expander.write('''
-                        For further information and any enquiries, or if you are interested in collaborating with us, please do not hesitate to get in touch with [Amir Rafe](mailto:amir.rafe@usu.edu).
-                ''')
     
-    with st.sidebar.expander("**Feedback Form**"):
+    with st.sidebar.expander("**Contact US**"):
+        st.write('''
+                 Feel free to reach out to us for any further information, enquiries, or if you're interested in collaborating with us. You can contact either [Amir Rafe](mailto:amir.rafe@usu.edu) or [Ruggiero (Rino) Lovreglio](mailto:r.Lovreglio@massey.ac.nz). 
+                 We're always happy to hear from you! Please provide us with your feedback, and don't forget to include your name, email, and position. Your input is invaluable in helping us improve EvacuAIPod.
+                   ''')
         with st.form(key='feedback_form'):
             name = st.text_input("Name")
             email = st.text_input("Email")
