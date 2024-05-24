@@ -6,6 +6,7 @@ import requests
 import openai
 import tempfile
 from typing import List
+import smtplib
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -211,6 +212,26 @@ def display_youtube_videos(df,search_engine):
             st.markdown(f'{keywords_string}', unsafe_allow_html=True)
         st.markdown("---")
 
+def send_email(name, email, position, feedback):
+    # Replace with your own Gmail SMTP settings
+    smtp_server = 'smtp.gmail.com'
+    smtp_port = 587
+    gmail_user = 'crwdynamics@gmail.com'
+    gmail_password = 'eisw noay gzdb zcrt'
+
+    message = f'Subject: Feedback from {name}\n\n' \
+              f'Name: {name}\n' \
+              f'Email: {email}\n' \
+              f'Position: {position}\n\n' \
+              f'Feedback: {feedback}'
+
+    with smtplib.SMTP(smtp_server, smtp_port) as server:
+        server.starttls()
+        server.login(gmail_user, gmail_password)
+        server.sendmail(gmail_user, gmail_user, message)
+
+
+
 
 def main():
     # Initialize session state variables
@@ -269,6 +290,16 @@ def main():
                         For further information and any enquiries, or if you are interested in collaborating with us, please do not hesitate to get in touch with [Amir Rafe](mailto:amir.rafe@usu.edu).
                 ''')
     
+    if st.sidebar.button("Submit Feedback"):
+        name = st.sidebar.text_input("Name")
+        email = st.sidebar.text_input("Email")
+        position = st.sidebar.text_input("Position")
+        feedback = st.sidebar.text_area("Feedback")
+
+        if st.sidebar.button("Send"):
+            send_email(name, email, position, feedback)
+            st.sidebar.success("Feedback sent!")
+
     if page == "Transcript":
         with st.form(key='search_form'):
             keywords = st.text_input("**Enter keywords to search for podcasts. Separate multiple keywords with spaces. If you want to search for an exact phrase, enclose it in quotation marks.**")
