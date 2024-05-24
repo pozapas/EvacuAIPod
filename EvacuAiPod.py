@@ -300,7 +300,7 @@ def main():
                  Feel free to reach out to us for any further information, enquiries, or if you're interested in collaborating with us. You can contact either [Amir Rafe](mailto:amir.rafe@usu.edu) or [Ruggiero (Rino) Lovreglio](mailto:r.Lovreglio@massey.ac.nz). 
                    ''')
         st.write('''
-                 We're always happy to hear from you! Please provide us with your feedback, and don't forget to include your name, email, and position. Your input is invaluable in helping us improve EvacuAIPod.
+                 We're always happy to hear from you! Please provide us with your feedback, and don't forget to include your name, email, and position. Your input is invaluable in helping us improve EvacuAIPod.]
                    ''')
         with st.form(key='feedback_form'):
             name = st.text_input("Name")
@@ -316,65 +316,58 @@ def main():
                 st.error("There was an error sending your feedback. Please try again later.")
 
     if page == "Transcript":
-        with st.form(key='search_form'):
-            keywords = st.text_input("**Enter keywords to search for podcasts. Separate multiple keywords with spaces. If you want to search for an exact phrase, enclose it in quotation marks.**")
-            submit_button = st.form_submit_button("Search")
-
+        # User input for search keywords
+        keywords = st.text_input("**Enter keywords to search for podcasts. Separate multiple keywords with spaces. If you want to search for an exact phrase, enclose it in quotation marks.**")
         st.markdown(":red-background[**Note:**] *The transcripts and keywords for the podcasts are generated automatically using AI. While we strive to ensure their accuracy, there may be some errors or omissions. If you notice any issues, please let us know so we can continue to improve our service.*")
-        
-        if submit_button:
-            if 'filtered_df' in st.session_state and not st.session_state.filtered_df.empty and not keywords:
-                # Create two tabs for 'Podcasts' and 'YouTube Videos'
+        if 'filtered_df' in st.session_state and not st.session_state.filtered_df.empty and not keywords:
+            # Create two tabs for 'Podcasts' and 'YouTube Videos'
                 tab1, tab2 = st.tabs(["Podcasts", "YouTube Videos"]) 
                 filtered_df = st.session_state.filtered_df             
                 # 'Podcasts' tab
                 with tab1:
                     # Display podcasts
-                    display_podcasts(filtered_df[filtered_df['Type'] == 'Pod'], search_engine)
+                    display_podcasts(filtered_df[filtered_df['Type'] == 'Pod'],search_engine)
 
                 # 'YouTube Videos' tab
                 with tab2:
                     # Display YouTube videos
-                    display_youtube_videos(filtered_df[filtered_df['Type'] == 'YouTube'], search_engine)
-            else: 
-                if keywords:
-                    # Check if the user wants to show all data
-                    if keywords == "*":
-                        filtered_df = df
-                    else:
-                        # Check if the keywords are enclosed in quotation marks
-                        if keywords.startswith('"') and keywords.endswith('"'):
-                            # Remove the quotation marks and search for the entire phrase
-                            phrase = keywords[1:-1]
-                            filtered_df = df[df.apply(lambda x: x.str.contains(phrase, case=False, na=False)).any(axis=1)]
-                        else:
-                            # Split the keywords and search for each word separately
-                            search_keywords = keywords.split()
-                            filtered_dfs = []  # List to hold DataFrames to concatenate
-                            for keyword in search_keywords:
-                                matching_df = df[df.apply(lambda x: x.str.contains(keyword, case=False, na=False)).any(axis=1)]
-                                filtered_dfs.append(matching_df)
-                            filtered_df = pd.concat(filtered_dfs).drop_duplicates()  # Concatenate all matching DataFrames and drop duplicates
-
-                    if not filtered_df.empty:
-                        # Create two tabs for 'Podcasts' and 'YouTube Videos'
-                        tab1, tab2 = st.tabs(["Podcasts", "YouTube Videos"])
-                        st.session_state.filtered_df = filtered_df
-                        st.session_state['filtered_df'] = filtered_df
-                        # 'Podcasts' tab
-                        with tab1:
-                            # Display podcasts
-                            display_podcasts(filtered_df[filtered_df['Type'] == 'Pod'], search_engine)
-
-                        # 'YouTube Videos' tab
-                        with tab2:
-                            # Display YouTube videos
-                            display_youtube_videos(filtered_df[filtered_df['Type'] == 'YouTube'], search_engine)
-
-                    else:
-                        st.write("No podcasts or YouTube videos found with the given keyword(s).")
+                    display_youtube_videos(filtered_df[filtered_df['Type'] == 'YouTube'],search_engine)
+        else: 
+            if keywords:
+                # Check if the keywords are enclosed in quotation marks
+                if keywords.startswith('"') and keywords.endswith('"'):
+                    # Remove the quotation marks and search for the entire phrase
+                    phrase = keywords[1:-1]
+                    filtered_df = df[df.apply(lambda x: x.str.contains(phrase, case=False, na=False)).any(axis=1)]
                 else:
-                    st.write("")
+                    # Split the keywords and search for each word separately
+                    search_keywords = keywords.split()
+                    filtered_dfs = []  # List to hold DataFrames to concatenate
+                    for keyword in search_keywords:
+                        matching_df = df[df.apply(lambda x: x.str.contains(keyword, case=False, na=False)).any(axis=1)]
+                        filtered_dfs.append(matching_df)
+                    filtered_df = pd.concat(filtered_dfs).drop_duplicates()  # Concatenate all matching DataFrames and drop duplicates                
+
+                if not filtered_df.empty:
+                    # Create two tabs for 'Podcasts' and 'YouTube Videos'
+                    tab1, tab2 = st.tabs(["Podcasts", "YouTube Videos"])
+                    st.session_state.filtered_df = filtered_df
+                    st.session_state['filtered_df'] = filtered_df
+                    # 'Podcasts' tab
+                    with tab1:
+                        # Display podcasts
+                        display_podcasts(filtered_df[filtered_df['Type'] == 'Pod'],search_engine)
+
+                    # 'YouTube Videos' tab
+                    with tab2:
+                        # Display YouTube videos
+                        display_youtube_videos(filtered_df[filtered_df['Type'] == 'YouTube'],search_engine)
+
+                else:
+                    st.write("No podcasts or YouTube videos found with the given keyword(s).")
+            
+            else:
+                st.write("")
     
         if 'filtered_df' in st.session_state and not st.session_state.filtered_df.empty:
             transcript1=[]
