@@ -270,7 +270,7 @@ def main():
                 ''')
     
     if page == "Transcript":
-        submitted = st.form_submit_button("Search")
+        submitted = st.form("Search")
         if submitted: 
             # User input for search keywords
             keywords = st.text_input("**Enter keywords to search for podcasts. Separate multiple keywords with spaces. If you want to search for an exact phrase, enclose it in quotation marks.**")
