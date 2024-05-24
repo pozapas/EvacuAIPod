@@ -317,42 +317,15 @@ def main():
 
     if page == "Transcript":
         # User input for search keywords
-        keywords = st.text_input("**Enter keywords to search for podcasts. Separate multiple keywords with spaces. If you want to search for an exact phrase, enclose it in quotation marks.**")
+        with st.form("my_form"):
+            keywords = st.text_input("**Enter keywords to search for podcasts. Separate multiple keywords with spaces. If you want to search for an exact phrase, enclose it in quotation marks.**")
+        submitted = st.form_submit_button("Search")
         st.markdown(":red-background[**Note:**] *The transcripts and keywords for the podcasts are generated automatically using AI. While we strive to ensure their accuracy, there may be some errors or omissions. If you notice any issues, please let us know so we can continue to improve our service.*")
-        if 'filtered_df' in st.session_state and not st.session_state.filtered_df.empty and not keywords:
-            # Create two tabs for 'Podcasts' and 'YouTube Videos'
-                tab1, tab2 = st.tabs(["Podcasts", "YouTube Videos"]) 
-                filtered_df = st.session_state.filtered_df             
-                # 'Podcasts' tab
-                with tab1:
-                    # Display podcasts
-                    display_podcasts(filtered_df[filtered_df['Type'] == 'Pod'],search_engine)
-
-                # 'YouTube Videos' tab
-                with tab2:
-                    # Display YouTube videos
-                    display_youtube_videos(filtered_df[filtered_df['Type'] == 'YouTube'],search_engine)
-        else: 
-            if keywords:
-                # Check if the keywords are enclosed in quotation marks
-                if keywords.startswith('"') and keywords.endswith('"'):
-                    # Remove the quotation marks and search for the entire phrase
-                    phrase = keywords[1:-1]
-                    filtered_df = df[df.apply(lambda x: x.str.contains(phrase, case=False, na=False)).any(axis=1)]
-                else:
-                    # Split the keywords and search for each word separately
-                    search_keywords = keywords.split()
-                    filtered_dfs = []  # List to hold DataFrames to concatenate
-                    for keyword in search_keywords:
-                        matching_df = df[df.apply(lambda x: x.str.contains(keyword, case=False, na=False)).any(axis=1)]
-                        filtered_dfs.append(matching_df)
-                    filtered_df = pd.concat(filtered_dfs).drop_duplicates()  # Concatenate all matching DataFrames and drop duplicates                
-
-                if not filtered_df.empty:
-                    # Create two tabs for 'Podcasts' and 'YouTube Videos'
-                    tab1, tab2 = st.tabs(["Podcasts", "YouTube Videos"])
-                    st.session_state.filtered_df = filtered_df
-                    st.session_state['filtered_df'] = filtered_df
+        if submitted:
+            if 'filtered_df' in st.session_state and not st.session_state.filtered_df.empty and not keywords:
+                # Create two tabs for 'Podcasts' and 'YouTube Videos'
+                    tab1, tab2 = st.tabs(["Podcasts", "YouTube Videos"]) 
+                    filtered_df = st.session_state.filtered_df             
                     # 'Podcasts' tab
                     with tab1:
                         # Display podcasts
@@ -362,48 +335,78 @@ def main():
                     with tab2:
                         # Display YouTube videos
                         display_youtube_videos(filtered_df[filtered_df['Type'] == 'YouTube'],search_engine)
+            else: 
+                if keywords:
+                    # Check if the keywords are enclosed in quotation marks
+                    if keywords.startswith('"') and keywords.endswith('"'):
+                        # Remove the quotation marks and search for the entire phrase
+                        phrase = keywords[1:-1]
+                        filtered_df = df[df.apply(lambda x: x.str.contains(phrase, case=False, na=False)).any(axis=1)]
+                    else:
+                        # Split the keywords and search for each word separately
+                        search_keywords = keywords.split()
+                        filtered_dfs = []  # List to hold DataFrames to concatenate
+                        for keyword in search_keywords:
+                            matching_df = df[df.apply(lambda x: x.str.contains(keyword, case=False, na=False)).any(axis=1)]
+                            filtered_dfs.append(matching_df)
+                        filtered_df = pd.concat(filtered_dfs).drop_duplicates()  # Concatenate all matching DataFrames and drop duplicates                
 
-                else:
-                    st.write("No podcasts or YouTube videos found with the given keyword(s).")
-            
-            else:
-                st.write("")
-    
-        if 'filtered_df' in st.session_state and not st.session_state.filtered_df.empty:
-            transcript1=[]
-            with st.form(key="podcast_form"):
-                st.subheader("**Transcription**")
-                st.write("**Select content from the list and request its transcript:**")
-                # Create a select box for the podcast using the filtered DataFrame from session state
-                podcast_options = st.session_state.filtered_df["Episode"].tolist()
-                podcast_choice = st.selectbox("Title:", podcast_options, key="podcast_select")
-                st.session_state['podcast_choice'] = podcast_choice  # Store podcast choice in session state
-                # Create a submit button
-                submit_button = st.form_submit_button(label="Submit")
+                    if not filtered_df.empty:
+                        # Create two tabs for 'Podcasts' and 'YouTube Videos'
+                        tab1, tab2 = st.tabs(["Podcasts", "YouTube Videos"])
+                        st.session_state.filtered_df = filtered_df
+                        st.session_state['filtered_df'] = filtered_df
+                        # 'Podcasts' tab
+                        with tab1:
+                            # Display podcasts
+                            display_podcasts(filtered_df[filtered_df['Type'] == 'Pod'],search_engine)
+
+                        # 'YouTube Videos' tab
+                        with tab2:
+                            # Display YouTube videos
+                            display_youtube_videos(filtered_df[filtered_df['Type'] == 'YouTube'],search_engine)
+
+                    else:
+                        st.write("No podcasts or YouTube videos found with the given keyword(s).")
                 
-                if submit_button:
-                    st.session_state.conversation_history = []
-                    st.session_state.messages = []
-                    try:
-                        transcript1 = read_transcript(podcast_choice)
-                        
+                else:
+                    st.write("")
+        
+            if 'filtered_df' in st.session_state and not st.session_state.filtered_df.empty:
+                transcript1=[]
+                with st.form(key="podcast_form"):
+                    st.subheader("**Transcription**")
+                    st.write("**Select content from the list and request its transcript:**")
+                    # Create a select box for the podcast using the filtered DataFrame from session state
+                    podcast_options = st.session_state.filtered_df["Episode"].tolist()
+                    podcast_choice = st.selectbox("Title:", podcast_options, key="podcast_select")
+                    st.session_state['podcast_choice'] = podcast_choice  # Store podcast choice in session state
+                    # Create a submit button
+                    submit_button = st.form_submit_button(label="Submit")
+                    
+                    if submit_button:
+                        st.session_state.conversation_history = []
+                        st.session_state.messages = []
+                        try:
+                            transcript1 = read_transcript(podcast_choice)
+                            
 
-                        # Check if the selected podcast is of type 'Pod'
-                        podcast_type = filtered_df[filtered_df['Episode'] == podcast_choice]['Type'].iloc[0]
-                        if podcast_type == 'Pod':
-                            transcript_with_paragraphs = add_paragraph_breaks(transcript1)
-                        else:
-                            transcript_with_paragraphs = transcript1
+                            # Check if the selected podcast is of type 'Pod'
+                            podcast_type = filtered_df[filtered_df['Episode'] == podcast_choice]['Type'].iloc[0]
+                            if podcast_type == 'Pod':
+                                transcript_with_paragraphs = add_paragraph_breaks(transcript1)
+                            else:
+                                transcript_with_paragraphs = transcript1
 
-                        st.session_state['transcript1'] = transcript_with_paragraphs  # Store transcript in session state
-                        st.text_area("Transcription", transcript_with_paragraphs, height=400)
-                        st.write(":rainbow-background[*To chat with the selected podcast, use the sidebar to navigate to the 'Chat with Podcast' page.*]")
+                            st.session_state['transcript1'] = transcript_with_paragraphs  # Store transcript in session state
+                            st.text_area("Transcription", transcript_with_paragraphs, height=400)
+                            st.write(":rainbow-background[*To chat with the selected podcast, use the sidebar to navigate to the 'Chat with Podcast' page.*]")
 
-                    except Exception as e:
-                        st.error(f"An error occurred: {e}")
+                        except Exception as e:
+                            st.error(f"An error occurred: {e}")
 
-            # If filtered_df isn't in session state or is empty, display a message
-            st.write("")
+                # If filtered_df isn't in session state or is empty, display a message
+                st.write("")
     elif page == "Chat with Podcast":
         if 'filtered_df' in st.session_state and 'podcast_choice' in st.session_state:
             filtered_df = st.session_state.filtered_df
