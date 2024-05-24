@@ -7,6 +7,8 @@ import openai
 import tempfile
 from typing import List
 import smtplib
+from email.mime.text import MIMEText
+from email.mime.multipart import MIMEMultipart
 from langchain.embeddings.openai import OpenAIEmbeddings
 from langchain_community.vectorstores import FAISS
 from langchain.text_splitter import RecursiveCharacterTextSplitter
@@ -213,24 +215,31 @@ def display_youtube_videos(df,search_engine):
         st.markdown("---")
 
 def send_email(name, email, position, feedback):
-    # Replace with your own Gmail SMTP settings
-    smtp_server = 'smtp.gmail.com'
-    smtp_port = 587
-    gmail_user = 'crwdynamics@gmail.com'
-    gmail_password = 'eisw noay gzdb zcrt'
+    sender_email = "crwdynamics@gmail.com"
+    receiver_email = "crwdynamics@gmail.com"
+    password = "eisw noay gzdb zcrt"
 
-    message = f'Subject: Feedback from {name}\n\n' \
-              f'Name: {name}\n' \
-              f'Email: {email}\n' \
-              f'Position: {position}\n\n' \
-              f'Feedback: {feedback}'
+    # Create the email
+    msg = MIMEMultipart()
+    msg['From'] = sender_email
+    msg['To'] = receiver_email
+    msg['Subject'] = "New Feedback Received"
 
-    with smtplib.SMTP(smtp_server, smtp_port) as server:
+    body = f"Name: {name}\nEmail: {email}\nPosition: {position}\n\nFeedback:\n{feedback}"
+    msg.attach(MIMEText(body, 'plain'))
+
+    try:
+        # Connect to the server
+        server = smtplib.SMTP('smtp.gmail.com', 587)
         server.starttls()
-        server.login(gmail_user, gmail_password)
-        server.sendmail(gmail_user, gmail_user, message)
-
-
+        server.login(sender_email, password)
+        text = msg.as_string()
+        server.sendmail(sender_email, receiver_email, text)
+        server.quit()
+        return True
+    except Exception as e:
+        print(f"Error: {e}")
+        return False
 
 
 def main():
@@ -290,15 +299,19 @@ def main():
                         For further information and any enquiries, or if you are interested in collaborating with us, please do not hesitate to get in touch with [Amir Rafe](mailto:amir.rafe@usu.edu).
                 ''')
     
-    if st.sidebar.button("Submit Feedback"):
-        name = st.sidebar.text_input("Name")
-        email = st.sidebar.text_input("Email")
-        position = st.sidebar.text_input("Position")
-        feedback = st.sidebar.text_area("Feedback")
-
-        if st.sidebar.button("Send"):
-            send_email(name, email, position, feedback)
-            st.sidebar.success("Feedback sent!")
+    with st.sidebar.expander("**Feedback Form**"):
+        with st.form(key='feedback_form'):
+            name = st.text_input("Name")
+            email = st.text_input("Email")
+            position = st.text_input("Position")
+            feedback = st.text_area("Feedback")
+            submit_feedback = st.form_submit_button(label="Submit")
+        
+        if submit_feedback:
+            if send_email(name, email, position, feedback):
+                st.write("Thank you for your feedback!")
+            else:
+                st.error("There was an error sending your feedback. Please try again later.")
 
     if page == "Transcript":
         with st.form(key='search_form'):
