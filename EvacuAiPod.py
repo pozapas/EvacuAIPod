@@ -287,39 +287,41 @@ def main():
                     # Display YouTube videos
                     display_youtube_videos(filtered_df[filtered_df['Type'] == 'YouTube'],search_engine)
         else: 
-            if keywords:
-                # Check if the user wants to show all data
-                if keywords == "*":
-                    filtered_df = df
-                else:
-                    # Check if the keywords are enclosed in quotation marks
-                    if keywords.startswith('"') and keywords.endswith('"'):
-                        # Remove the quotation marks and search for the entire phrase
-                        phrase = keywords[1:-1]
-                        filtered_df = df[df.apply(lambda x: x.str.contains(phrase, case=False, na=False)).any(axis=1)]
+            submitted = st.form_submit_button("Search")
+            if submitted: 
+                if keywords:
+                    # Check if the user wants to show all data
+                    if keywords == "*":
+                        filtered_df = df
                     else:
-                        # Split the keywords and search for each word separately
-                        search_keywords = keywords.split()
-                        filtered_dfs = []  # List to hold DataFrames to concatenate
-                        for keyword in search_keywords:
-                            matching_df = df[df.apply(lambda x: x.str.contains(keyword, case=False, na=False)).any(axis=1)]
-                            filtered_dfs.append(matching_df)
-                        filtered_df = pd.concat(filtered_dfs).drop_duplicates()  # Concatenate all matching DataFrames and drop duplicates
-            
-                if not filtered_df.empty:
-                    # Create two tabs for 'Podcasts' and 'YouTube Videos'
-                    tab1, tab2 = st.tabs(["Podcasts", "YouTube Videos"])
-                    st.session_state.filtered_df = filtered_df
-                    st.session_state['filtered_df'] = filtered_df
-                    # 'Podcasts' tab
-                    with tab1:
-                        # Display podcasts
-                        display_podcasts(filtered_df[filtered_df['Type'] == 'Pod'],search_engine)
+                        # Check if the keywords are enclosed in quotation marks
+                        if keywords.startswith('"') and keywords.endswith('"'):
+                            # Remove the quotation marks and search for the entire phrase
+                            phrase = keywords[1:-1]
+                            filtered_df = df[df.apply(lambda x: x.str.contains(phrase, case=False, na=False)).any(axis=1)]
+                        else:
+                            # Split the keywords and search for each word separately
+                            search_keywords = keywords.split()
+                            filtered_dfs = []  # List to hold DataFrames to concatenate
+                            for keyword in search_keywords:
+                                matching_df = df[df.apply(lambda x: x.str.contains(keyword, case=False, na=False)).any(axis=1)]
+                                filtered_dfs.append(matching_df)
+                            filtered_df = pd.concat(filtered_dfs).drop_duplicates()  # Concatenate all matching DataFrames and drop duplicates
+                
+                    if not filtered_df.empty:
+                        # Create two tabs for 'Podcasts' and 'YouTube Videos'
+                        tab1, tab2 = st.tabs(["Podcasts", "YouTube Videos"])
+                        st.session_state.filtered_df = filtered_df
+                        st.session_state['filtered_df'] = filtered_df
+                        # 'Podcasts' tab
+                        with tab1:
+                            # Display podcasts
+                            display_podcasts(filtered_df[filtered_df['Type'] == 'Pod'],search_engine)
 
-                    # 'YouTube Videos' tab
-                    with tab2:
-                        # Display YouTube videos
-                        display_youtube_videos(filtered_df[filtered_df['Type'] == 'YouTube'],search_engine)
+                        # 'YouTube Videos' tab
+                        with tab2:
+                            # Display YouTube videos
+                            display_youtube_videos(filtered_df[filtered_df['Type'] == 'YouTube'],search_engine)
 
                 else:
                     st.write("No podcasts or YouTube videos found with the given keyword(s).")
