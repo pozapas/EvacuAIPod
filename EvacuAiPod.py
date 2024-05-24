@@ -298,7 +298,9 @@ def main():
     with st.sidebar.expander("**Contact US**"):
         st.write('''
                  Feel free to reach out to us for any further information, enquiries, or if you're interested in collaborating with us. You can contact either [Amir Rafe](mailto:amir.rafe@usu.edu) or [Ruggiero (Rino) Lovreglio](mailto:r.Lovreglio@massey.ac.nz). 
-                 We're always happy to hear from you! Please provide us with your feedback, and don't forget to include your name, email, and position. Your input is invaluable in helping us improve EvacuAIPod.
+                   ''')
+        st.write('''
+                 :green-background[We're always happy to hear from you! Please provide us with your feedback, and don't forget to include your name, email, and position. Your input is invaluable in helping us improve EvacuAIPod.]
                    ''')
         with st.form(key='feedback_form'):
             name = st.text_input("Name")
