@@ -1,3 +1,4 @@
+# langchain version
 import os
 import streamlit as st
 import pandas as pd
@@ -15,6 +16,7 @@ from langchain_openai import OpenAI
 from langchain.chains.question_answering import load_qa_chain
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_groq import ChatGroq
+
 
 default_groq_key = st.secrets["groq_key"]
 gmail_key = st.secrets["gmail_key"]
@@ -319,7 +321,7 @@ def main():
             submit_button = st.form_submit_button("Search")
 
         st.markdown(":red-background[**Note:**] *The transcripts and keywords for the podcasts are generated automatically using AI. While we strive to ensure their accuracy, there may be some errors or omissions. If you notice any issues, please let us know so we can continue to improve our service.*")
-
+        
         if submit_button:
             if 'filtered_df' in st.session_state and not st.session_state.filtered_df.empty and not keywords:
                 # Create two tabs for 'Podcasts' and 'YouTube Videos'
@@ -394,7 +396,7 @@ def main():
                         
 
                         # Check if the selected podcast is of type 'Pod'
-                        podcast_type = st.session_state.filtered_df[st.session_state.filtered_df['Episode'] == podcast_choice]['Type'].iloc[0]
+                        podcast_type = filtered_df[filtered_df['Episode'] == podcast_choice]['Type'].iloc[0]
                         if podcast_type == 'Pod':
                             transcript_with_paragraphs = add_paragraph_breaks(transcript1)
                         else:
