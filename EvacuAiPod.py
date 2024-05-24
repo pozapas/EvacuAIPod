@@ -270,25 +270,25 @@ def main():
                 ''')
     
     if page == "Transcript":
-        # User input for search keywords
-        keywords = st.text_input("**Enter keywords to search for podcasts. Separate multiple keywords with spaces. If you want to search for an exact phrase, enclose it in quotation marks.**")
-        st.markdown(":red-background[**Note:**] *The transcripts and keywords for the podcasts are generated automatically using AI. While we strive to ensure their accuracy, there may be some errors or omissions. If you notice any issues, please let us know so we can continue to improve our service.*")
-        if 'filtered_df' in st.session_state and not st.session_state.filtered_df.empty and not keywords:
-            # Create two tabs for 'Podcasts' and 'YouTube Videos'
-                tab1, tab2 = st.tabs(["Podcasts", "YouTube Videos"]) 
-                filtered_df = st.session_state.filtered_df             
-                # 'Podcasts' tab
-                with tab1:
-                    # Display podcasts
-                    display_podcasts(filtered_df[filtered_df['Type'] == 'Pod'],search_engine)
+        submitted = st.form_submit_button("Search")
+        if submitted: 
+            # User input for search keywords
+            keywords = st.text_input("**Enter keywords to search for podcasts. Separate multiple keywords with spaces. If you want to search for an exact phrase, enclose it in quotation marks.**")
+            st.markdown(":red-background[**Note:**] *The transcripts and keywords for the podcasts are generated automatically using AI. While we strive to ensure their accuracy, there may be some errors or omissions. If you notice any issues, please let us know so we can continue to improve our service.*")
+            if 'filtered_df' in st.session_state and not st.session_state.filtered_df.empty and not keywords:
+                # Create two tabs for 'Podcasts' and 'YouTube Videos'
+                    tab1, tab2 = st.tabs(["Podcasts", "YouTube Videos"]) 
+                    filtered_df = st.session_state.filtered_df             
+                    # 'Podcasts' tab
+                    with tab1:
+                        # Display podcasts
+                        display_podcasts(filtered_df[filtered_df['Type'] == 'Pod'],search_engine)
 
-                # 'YouTube Videos' tab
-                with tab2:
-                    # Display YouTube videos
-                    display_youtube_videos(filtered_df[filtered_df['Type'] == 'YouTube'],search_engine)
-        else: 
-            submitted = st.form_submit_button("Search")
-            if submitted: 
+                    # 'YouTube Videos' tab
+                    with tab2:
+                        # Display YouTube videos
+                        display_youtube_videos(filtered_df[filtered_df['Type'] == 'YouTube'],search_engine)
+            else: 
                 if keywords:
                     # Check if the user wants to show all data
                     if keywords == "*":
@@ -323,11 +323,11 @@ def main():
                             # Display YouTube videos
                             display_youtube_videos(filtered_df[filtered_df['Type'] == 'YouTube'],search_engine)
 
+                    else:
+                        st.write("No podcasts or YouTube videos found with the given keyword(s).")
+                
                 else:
-                    st.write("No podcasts or YouTube videos found with the given keyword(s).")
-            
-            else:
-                st.write("")
+                    st.write("")
     
         if 'filtered_df' in st.session_state and not st.session_state.filtered_df.empty:
             transcript1=[]
