@@ -216,7 +216,7 @@ def display_youtube_videos(df,search_engine):
         st.markdown("---")
 
 def send_email(name, email, position, feedback):
-    sender_email = email
+    sender_email = "crwdynamics@gmail.com"
     receiver_email = "crwdynamics@gmail.com"
     password = gmail_key
 
