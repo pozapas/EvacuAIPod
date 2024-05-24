@@ -321,7 +321,7 @@ def main():
             submit_button = st.form_submit_button("Search")
 
         st.markdown(":red-background[**Note:**] *The transcripts and keywords for the podcasts are generated automatically using AI. While we strive to ensure their accuracy, there may be some errors or omissions. If you notice any issues, please let us know so we can continue to improve our service.*")
-
+        filtered_df = pd.DataFrame() 
         if submit_button:
             if 'filtered_df' in st.session_state and not st.session_state.filtered_df.empty and not keywords:
                 # Create two tabs for 'Podcasts' and 'YouTube Videos'
