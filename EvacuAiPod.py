@@ -317,7 +317,9 @@ def main():
 
     if page == "Transcript":
         # User input for search keywords
-        keywords = st.text_input("**Enter keywords to search for podcasts. Separate multiple keywords with spaces. If you want to search for an exact phrase, enclose it in quotation marks.**")
+        with st.form(key='Keywords'):
+            keywords = st.text_input("**Enter keywords to search for podcasts. Separate multiple keywords with spaces. If you want to search for an exact phrase, enclose it in quotation marks.**")
+            submit_button = st.form_submit_button(label='Search')
         st.markdown(":red-background[**Note:**] *The transcripts and keywords for the podcasts are generated automatically using AI. While we strive to ensure their accuracy, there may be some errors or omissions. If you notice any issues, please let us know so we can continue to improve our service.*")
         if 'filtered_df' in st.session_state and not st.session_state.filtered_df.empty and not keywords:
             # Create two tabs for 'Podcasts' and 'YouTube Videos'
