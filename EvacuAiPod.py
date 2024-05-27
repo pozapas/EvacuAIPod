@@ -337,18 +337,32 @@ def main():
         else: 
             if keywords:
                 # Check if the keywords are enclosed in quotation marks
-                if keywords.startswith('"') and keywords.endswith('"'):
-                    # Remove the quotation marks and search for the entire phrase
-                    phrase = keywords[1:-1]
-                    filtered_df = df[df.apply(lambda x: x.str.contains(phrase, case=False, na=False)).any(axis=1)]
-                else:
-                    # Split the keywords and search for each word separately
-                    search_keywords = keywords.split()
-                    filtered_dfs = []  # List to hold DataFrames to concatenate
-                    for keyword in search_keywords:
+                # Regular expression to find phrases enclosed in double quotes
+                import re
+                phrases = re.findall(r'"(.*?)"', keywords)
+                # Remove the phrases from the original input to get the remaining words
+                remaining_keywords = re.sub(r'"(.*?)"', '', keywords).split()
+
+                # List to hold DataFrames for intersection
+                filtered_dfs = []
+
+                # Search for each phrase
+                for phrase in phrases:
+                    matching_df = df[df.apply(lambda x: x.str.contains(phrase, case=False, na=False)).any(axis=1)]
+                    filtered_dfs.append(matching_df)
+
+                # Search for each remaining keyword
+                for keyword in remaining_keywords:
+                    if keyword.strip():  # Ensure it's not an empty string
                         matching_df = df[df.apply(lambda x: x.str.contains(keyword, case=False, na=False)).any(axis=1)]
                         filtered_dfs.append(matching_df)
-                    filtered_df = pd.concat(filtered_dfs).drop_duplicates()  # Concatenate all matching DataFrames and drop duplicates                
+
+                # Intersect all DataFrames to ensure all conditions are met
+                if filtered_dfs:
+                    from functools import reduce
+                    filtered_df = reduce(lambda left, right: pd.merge(left, right, how='inner'), filtered_dfs)
+                else:
+                    filtered_df = df                
 
                 if not filtered_df.empty:
                     # Create two tabs for 'Podcasts' and 'YouTube Videos'
