@@ -7,6 +7,7 @@ import openai
 import tempfile
 from typing import List
 import smtplib
+import re
 from email.mime.text import MIMEText
 from email.mime.multipart import MIMEMultipart
 from langchain.embeddings.openai import OpenAIEmbeddings
@@ -336,9 +337,7 @@ def main():
                     display_youtube_videos(filtered_df[filtered_df['Type'] == 'YouTube'],search_engine)
         else: 
             if keywords:
-                # Check if the keywords are enclosed in quotation marks
                 # Regular expression to find phrases enclosed in double quotes
-                import re
                 phrases = re.findall(r'"(.*?)"', keywords)
                 # Remove the phrases from the original input to get the remaining words
                 remaining_keywords = re.sub(r'"(.*?)"', '', keywords).split()
