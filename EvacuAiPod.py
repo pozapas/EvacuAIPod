@@ -435,6 +435,10 @@ def main():
                     st.session_state.news_results = news
                     if news:
                         tab1, tab2, tab3 = st.tabs(['Podcasts', 'YouTube Videos', 'News'])
+                        with tab1:
+                            st.write("No podcasts found with the given keyword(s).")
+                        with tab2:
+                            st.write("No YouTube videos found with the given keyword(s).")
                         with tab3:
                             display_news(news)
                     else:
