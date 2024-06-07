@@ -464,10 +464,11 @@ def main():
                 if submit_button:
                     st.session_state.conversation_history = []
                     st.session_state.messages = []
+                    news = search_news(keywords)
+                    st.session_state.news_results = news
+                    st.session_state.news_keywords = keywords
                     try:
                         transcript1 = read_transcript(podcast_choice)
-                        
-
                         # Check if the selected podcast is of type 'Pod'
                         podcast_type = filtered_df[filtered_df['Episode'] == podcast_choice]['Type'].iloc[0]
                         if podcast_type == 'Pod':
@@ -481,7 +482,9 @@ def main():
 
                     except Exception as e:
                         st.error(f"An error occurred: {e}")
-
+                elif 'news_results' in st.session_state:
+                    news = st.session_state.news_results
+                    keywords = st.session_state.news_keywords
             # If filtered_df isn't in session state or is empty, display a message
             st.write("")
     elif page == "Chat with Podcast":
