@@ -17,7 +17,7 @@ from langchain_openai import OpenAI
 from langchain.chains.question_answering import load_qa_chain
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_groq import ChatGroq
-
+from GNews import GNews
 
 default_groq_key = st.secrets["groq_key"]
 gmail_key = st.secrets["gmail_key"]
@@ -243,6 +243,12 @@ def send_email(name, email, position, feedback):
         print(f"Error: {e}")
         return False
 
+# Initialize the GNews client
+gnews = GNews()
+
+def search_news(keywords):
+    news = gnews.get_news(keywords)
+    return news
 
 def main():
     # Initialize session state variables
@@ -324,7 +330,7 @@ def main():
         st.markdown(":red-background[**Note:**] *The transcripts and keywords for the podcasts are generated automatically using AI. While we strive to ensure their accuracy, there may be some errors or omissions. If you notice any issues, please let us know so we can continue to improve our service.*")
         if 'filtered_df' in st.session_state and not st.session_state.filtered_df.empty and not keywords:
             # Create two tabs for 'Podcasts' and 'YouTube Videos'
-                tab1, tab2 = st.tabs(["Podcasts", "YouTube Videos"]) 
+                tab1, tab2, tab3 = st.tabs(['Podcasts', 'YouTube Videos', 'News']) 
                 filtered_df = st.session_state.filtered_df             
                 # 'Podcasts' tab
                 with tab1:
@@ -335,6 +341,21 @@ def main():
                 with tab2:
                     # Display YouTube videos
                     display_youtube_videos(filtered_df[filtered_df['Type'] == 'YouTube'],search_engine)
+
+                with tab3:
+                    # Display news articles
+                    news = search_news(keywords)
+                    if news:
+                        for i, article in enumerate(news[:10]):  # Display top 10 news articles
+                            st.subheader(f"{i + 1}. {article['title']}")
+                            st.write(article['description'])
+                            st.write(f"[Read more]({article['url']})")
+                            st.write(f"Published at: {article['published date']}")
+                            st.write(f"Source: [{article['publisher']['title']}]({article['publisher']['href']})")
+                            if 'image' in article:
+                                st.image(article['image'])
+                    else:
+                        st.write('No news articles found.')
         else: 
             if keywords:
                 # Regular expression to find phrases enclosed in double quotes

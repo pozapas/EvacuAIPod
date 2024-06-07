@@ -9,3 +9,4 @@ faiss-cpu
 faiss-gpu
 langchain_groq
 sentence-transformers
+gnews
