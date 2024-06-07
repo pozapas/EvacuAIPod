@@ -247,15 +247,21 @@ def send_email(name, email, position, feedback):
 # Initialize the GNews client
 gnews = GNews()
 
+# Search for news articles
 def search_news(keywords):
     news = gnews.get_news(keywords)
     return news
 
-def get_article_images(url):
+# Get the first image from an article
+def get_first_image(url):
     article = Article(url)
-    article.download()
-    article.parse()
-    return article.images
+    try:
+        article.download()
+        article.parse()
+        images = list(article.images)
+        return images[0] if images else None
+    except Exception as e:
+        return None
 
 def main():
     # Initialize session state variables
@@ -354,16 +360,21 @@ def main():
                     news = search_news(keywords)
                     if news:
                         for i, article in enumerate(news[:10]):  # Display top 10 news articles
-                            st.subheader(f"{i + 1}. {article['title']}")
-                            st.write(article['description'])
-                            st.write(f"[Read more]({article['url']})")
-                            st.write(f"Published at: {article['published date']}")
-                            st.write(f"Source: [{article['publisher']['title']}]({article['publisher']['href']})")
+                            col1, col2 = st.columns([1, 4])
                             
-                            # Fetch and display images
-                            images = get_article_images(article['url'])
-                            for img_url in images:
-                                st.image(img_url, width=400)
+                            with col1:
+                                image_url = get_first_image(article['url'])
+                                if image_url:
+                                    st.image(image_url, width=150)
+                                else:
+                                    st.write("No image available.")
+                            
+                            with col2:
+                                st.subheader(f"{i + 1}. {article['title']}")
+                                st.write(article['description'])
+                                st.write(f"[Read more]({article['url']})")
+                                st.write(f"Published at: {article['published date']}")
+                                st.write(f"Source: [{article['publisher']['title']}]({article['publisher']['href']})")
                     else:
                         st.write('No news articles found.')
         else: 
@@ -414,16 +425,21 @@ def main():
                         news = search_news(keywords)
                         if news:
                             for i, article in enumerate(news[:10]):  # Display top 10 news articles
-                                st.subheader(f"{i + 1}. {article['title']}")
-                                st.write(article['description'])
-                                st.write(f"[Read more]({article['url']})")
-                                st.write(f"Published at: {article['published date']}")
-                                st.write(f"Source: [{article['publisher']['title']}]({article['publisher']['href']})")
+                                col1, col2 = st.columns([1, 4])
                                 
-                                # Fetch and display images
-                                images = get_article_images(article['url'])
-                                for img_url in images:
-                                    st.image(img_url, width=400)
+                                with col1:
+                                    image_url = get_first_image(article['url'])
+                                    if image_url:
+                                        st.image(image_url, width=150)
+                                    else:
+                                        st.write("No image available.")
+                                
+                                with col2:
+                                    st.subheader(f"{i + 1}. {article['title']}")
+                                    st.write(article['description'])
+                                    st.write(f"[Read more]({article['url']})")
+                                    st.write(f"Published at: {article['published date']}")
+                                    st.write(f"Source: [{article['publisher']['title']}]({article['publisher']['href']})")
                         else:
                             st.write('No news articles found.')
 
