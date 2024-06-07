@@ -1,0 +1,271 @@
+Introduction by Erica Kuligowski
+
+Okay, welcome everyone to our gosh. Is it the 11th webinar in our series? This is well, first of all, my name is Erica kuligowski and I will be your MC for today. This is part of the human behavior and fires webinar series from the human behavior and fire permanent group of the International Association for Fire Safety Science. 
+
+So we're really excited to be presenting or showcasing two additional early career researchers in our field, who will be talking about crowd evacuation, and so we'll have two speakers today: yurai kets and he will be talking about sensitivity analysis in pedestrian and evacuation model in and then second Yin sh Zang, on how to model evacuation behavior in fire, a coupling numerical approach using cfd and CA models, and we're really excited to have you both here. 
+
+Thank you so much for presenting on your topic and for sharing your expertise with us today. So a little bit about the human behavior and fire permanent group in ifss. 
+
+I am coordinating this alongside with my colleague, associate professor enrio Roni from Lund University in Sweden, and so we've been working and leading this group for a couple of years now within ifss, and we thank very much Arthur rohart for his amazing technical support, not just for the webinar series but really for our group in general, and Arthur is from Lund University, so thank you very much. This is the 11th event of our webinar series. 
+
+We're really excited about that and this will be recorded today and posted on our YouTube channel. and Arthur, if you don't mind sharing a link to the YouTube channel. 
+
+We have all of the other 10 webinars on that YouTube channel for you to take a look if you haven't seen them, and they're on a number of different topics all relevant to human behavior and fire, so hopefully you'll have a chance to take a look at that if you've missed any in the series. We also have a number of ongoing activities in our group. 
+
+One of them in particular is developing a research road map, and so we've got four different task groups working on understanding the research gaps in the field, and we've published one paper from that work already, and Rico is leading another task group that is working on a paper at the moment understanding the obstacles to our research gaps, and then there'll be a final set of work research report and hopefully a publication on the research road map itself. 
+
+So please stay tuned. If you haven't already joined our permanent working group, really would love to have you join us, and so Arthur will also put in the chat a link to join our permanent group in ifss and that if you join, you'll be able to maintain, certainly be updated on what we're doing. feel free to contribute, so please sign up through the link that Arthur will share in the chat. 
+
+All right, so our early career researchers on evacuation modeling, so on crowd evacuation. So I just want to read a bit of their bios, and if they would like to say a little bit more about themselves, they can certainly feel free to do that. Then once I'm done, I'll turn it over to yri. Oh so first. URI ketz is a PhD student at the Czech Technical University in Prague with a background in computer science. 
+
+His research focuses on the use of sensitivity analysis and machine learning techniques in pedestrian and evacuation Dynamics. I'm really looking forward to your presentation today. Dr yusin Zang completed her PhD at Toni University, during which she studied at the University of Edinburgh and Brown University for two years. Her research focuses on human Centric response and fire, and she applies data analysis and modeling to predict evacuation procedure and optimize evacuation plans. 
+
+So thank you both for joining us. I'm going to stop sharing my screen, so I will turn it over to you, yri, to please share your screen with us and just a kind of an overview of how this next hour is going to work, or 50 minutes is going to work. Each speaker will have about 18 minutes and then that will leave us about 20 minutes for questions. 
+
+As you are listening to these amazing speeches, please feel free to type your questions in the chat and then I'll be moderating those at the end of our talks today and please stay tuned. So this is sort of our last webinar before the summer hits for the northern part of the world, and so we'll certainly be reestablishing some of the webinar, the webinar series, after the Summer's over. 
+
+So stay tuned and for new webinars coming up. So I'll turn it over to you, yri, to please share your screen, and I'll let you know if we're going over time, but just maybe around 18 minutes, and then we'll turn it back over to youen. Thank you so much. Okay, thank you, so I've tried sharing the screen. I'm not sure if you can see it. you can see it perfectly. 
+
+Thank you, perfect, so we can get to it all right. So thank you, Erica, for the introduction and for the opportunity to present some of our research and what we do here at this webinar. I would also want to give a quick shout out to my supervisors, pavak Han n manova and Daniel bash. 
+
+I believe hanai is here and, as you can see, the topic for today is sensitivity analysis in pedestrian and evacuation modeling, where I've kind of structured this talk into two segments, where the first one is a bit of an advertisement for sensitivity analysis and an introduction. What is it and how it's been used in evacuation modeling lately? And the second part will be a case study of a simulated evacuation of a heterogeneous crowd. 
+
+So we'll have an example of how we can use these methods all right. So first of all we should kind of talk about what situation are we in. So we have a blackbox model like a simulator or other model, where we don't really know what's going on inside, but we can collect data from it. 
+
+So we have a bunch of inputs here and one or more outputs and sensitivity analysis can help us answer questions such as which of these inputs are the most important or which of them are not quite as important and we can kind of f leave them out of the analysis and not lose much information. 
+
+Or what are some of the kind of interesting parameter ranges where, for example, most of the changes in the output happen, or what parameter combinations lead to quote unquote, special outcomes such as a system failure or failed evacuation, for example. So I have a very quick definition here for you. 
+
+It is sensitivity analysis is the study of how uncertainty in the output of a model can be a portioned to different sources of uncertainty in the model input. so we're looking at what is the exact effect of each of the inputs. 
+
+This is often paired with uncertainty analysis, which is simply the quantification of uncertainty in the model output, and I also have a simple example here who, which many of you have probably seen at some point, and that's standardized regression coefficients. So if we have a linear model like this, then these least squares coefficients tell us something about how the model behave, behaves with respect to each of the inputs. 
+
+
+
+Presentation by Juraj Kmec
+
+There's just a slight small thing that we have to do. We have to standardize them and bring them to a common range, but this can be easily done and we get a nice simple sensitivity measure. But there are some more sophisticated methods. one that comes to the Mind first for many people is derivatives right. 
+
+So basically we pick a base line Point like some reasonable parameter values and we change each of the inputs on some interval kind of one by one and see what happens on the output side, and this is called the one at a time approach and it's a sensitivity measure. 
+
+But it has some problems U mainly that it depends on the choice of the initial point in the parameter space, like what are the values that we choose as the Baseline? Oh also it fails to account for Factor interactions, which is what happens if we kind of move and Vary multiple factors at once right this can be can lead to different Behavior than just varying them independently. 
+
+And also we usually don't have the analytical derivative, but this can be salvaged pretty easily by just using the discretise derivative right. We can always do that and aggregating over multiple sample points to filter out the dependency of the initial point, and this way we get something that's called the elementary effects method, which is a nice method often used for screening. 
+
+That means of kind of leaving out the or detecting which variables are not quite as important and leaving them out. But the kind of standard methods with some nice mathematical background are the variance based methods, where the main idea is to compute Global statistics, that is expected values and variances with different parameter combinations fixed. I have the equations written here, just so you have an idea of how such a thing can be defined. 
+
+But what's arguably more important is their interpretation. So on the left hand side I have the first order sensitivity index, which tells us how much of the total variance is explained By changes in XI alone. So kind of like in the one at a time scenario where we just move one factor around and see what happens and we get the exact percentage of variance which we can kind of control in this way. 
+
+But this still fails to account for the factor interactions, and for that we have the total effect index which tells us how much of the total variance would be lost if we left XI out. so this also. This contains the first order but also higher order interactions where we get like pairs or triplets of inputs that contain XI and we also get a percentage of variance which somehow depends on XI. 
+
+Now there are multiple methods to estimate these, and we'll see one of them at the case study. But for now that's enough with the theory. But before we get to the case study, I have just a brief overview of the topics that sensitivity analysis has been used for in pedestrian and evacuation modeling recently. First of all, we can use it to kind of study the parameter sensitivity and simulation models so how the simulators themselves behave. 
+
+Or we can use it as a tool for model validation, or we can use it as kind of the main tool of analysis to study the Model Behavior, or we could do uncertainty analysis and kind of assert how confident we are in our results. Now I have a bunch of references here which I will show you at the end of the talk in case someone wants to pause and take a look. 
+
+But for now we can get to the actual case study. So, as I mentioned, we'll have a simulated evacuation of a heterog genius crowd. Where the problem is, we want to study the total evacuation time of a cramped interior room with respect to the seating arrangements. So we'll be looking at who is seated where and what effect that has on the total evacuation time. so the premises are fully occupied. 
+
+That means each seat is taken and some occupants are movement impaired. In this simple case. This is simulated by simply a slower speed, a longer acceleration time and the larger diameter, and what we want to do is estimate the sensitivity to the number or ratio of movement imper occupants, which is kind of like an extrinsic variable which is given to us from the ice outside if we're, for example, organizing an event, and then we have two descriptors of the seating. 
+
+So we have the average inter occupant distance of movement impaired occupants, which basically tells us whether the movement impaired occupants are kind of closed together in a single cluster or if they're more spread out evenly throughout the room. And we also have the average distance to the exit of movement impaired occupants, which is pretty much the average distance that they have to travel to exit the room. 
+
+And as I mentioned before, this is a simulation study. So the simulator of choice here is Pathfinder by Thunderhead engineering. Now what geometries are we working with? So we have a train geometry on the left hand side and a lecture hole geometry on the right hand side. at the top I have some actual pictures from inside of the model geometry, and before and at the bottom we have their Pathfinder models. 
+
+So in this case, the kind of brightly colored occupants Are. The Movement impaired ones and the darker redish are the non movement impaired occupants. Okay and now with the uncertainty analysis. So here we are asking the question whether is it even worth it to study the effects of seating on evacuation time, and what I hope to convince you is that the answer is yes. 
+
+So one of the tools that we can use for this is the so called law of total variance, where we can decompose the total variance in total evacuation time to an unexplained variance portion, which is basically the inherent randomness of the model, where if we run the simulation multiple times with the same seedings, basically we get some different numbers based on how, in that particular case, the occupants act, and we also have an explained variance portion which is sort of the deterministic part of the equation, given a fixed seating configuration, which I called see here, and we can estimate these numbers quite easily just from the definition, and we will get a table like the one below u, in which I've computed 50 random I seting configurations and executed each of them 50 times, with approximately 20% of the occupants having some movement impairments and. 
+
+From this table we can see that for both geometries, we get something close to 50% of unexplained variants and 50% in the explained variance, which is a bit less for the train geometry and a bit more for the lecture hle, which means that something in this particular case, something like 50% of the total variance is actually attributed to just the seating. 
+
+So on a closer look, we can look at the individual distributions where for different seating configurations. So here I have extracted the fastest and the slowest seating coordination for both the train and the lecture host scenario, and we see that the distributions are quite different. 
+
+On average, the difference is something like 7 Seconds, which is definitely not negligible, and if we could figure out what characteristics lead to these faster distributions, we could obviously Salvage that and use it while, for example, designing seating guidelines. And there is also one more caveat here, in that these all very much depends on how accurate those estimates of the average are right. 
+
+So here I have just as kind of an illustration, the convergence plot of the estimate of average total evacuation time, given the number of Samples used to compute it. And we see here that for the first like 10 or so samples, the estimates are actually quite volatile. so U this is something that we should always keep in mind, right or for further analysis to filter out the randomness. 
+
+I've chosen 10 as the number of samples which is reasonably close to the total values. But as I said, it's something to always keep in mind and for illustration, I have the fastest and the slowest configurations extracted here, the fastest ones at the top. We can immediately see that the movement iner occupants are near the exit here so that don't have to travel long and in the lowest ones. It's kind of the opposite here right. 
+
+They're far from the exit and kind of close together but not in like a very noticeable cluster. okay and we can put this into numbers by the sensitivity indices that I've talked about earlier. So we can estimate those total effect indexes and the first order sensitivity indexes by what's called Sal method, and I used an python implementation here in s lip, where we can see that from almost 1.000 model evaluation we get the following numbers. 
+
+So we can see that the main driving factor is this: n here that is the number of movement impaired occupants, which is kind of the macroscopic variable that dictates the average velocity of the entire crowd. right, but we see that the seating characteristics are not exactly negligible. 
+
+Especially the exit distance amounts to something like 25% of the total variance, or 23 in the cases of the lecture hall, which is definitely not something that we can just discard right. 
+
+The inter occupant distance is not nearly as important, especially in the for first order index, but we still get something like 10% of the variance in the total effect index, and actually the difference between these two numbers means that these factors interact with one another, which is something we would miss if we just used one at a time approach which is very common. 
+
+So the bottom line is that this is worth further study and we should pay more attention to it in further research. I've also talked about how great all of this is right, but there are like with anything. There are limitations and things to consider, mainly that these variance based methods are very computationally demanding. 
+
+We see on the graph here a clear exponential Trend which is given by the method used to estimate this, these indexes, where each time we want a more accurate estimate, we need to double the amount of samples that we use to compute it, which is clearly an exponential Trend and that might be limiting, but there are of course ways to remedy this. 
+
+For example, we could use a screening methods like the elementary effects method that I mentioned earlier, to eliminate some of the variables that don't have a big effect. Or we could build a surrogate model, which is basically machine learning model, and you test the Sens ity of this model instead, which is fast, or we could parallelize the computation, which shouldn't be hard, given that we get a matrix of inputs basically that we can process independently. 
+
+Another thing to consider is that the results depend heavily on the distribution of the parameters. So, for example, for the ratio variable, before I chose a uniform distribution between 10% and 30%, but if I chose a different distribution here then we would obviously get different results. 
+
+
+
+Presentation by Yuxin Zhang
+
+so this is also something we should keep in mind, and, of course, any findings still need to be empirically validated. 
+
+So, for example, we haven't found a large effect in the clustering variable, but that doesn't mean that it does not exist. Maybe we just didn't model it properly right. So also something to keep in mind. And now to conclude in the first part of told you something about sensitivity analysis, and it is a powerful tool that is starting to see use in evacuation modeling and paired with uncertainty analysis. 
+
+It can provide great insight into the behavior of our model and from the case study side, uncertainty analysis shows that roughly 50% of the variance in total evacuation time can be attributed to the initial positions of movement impaired occupants. In this particular setting and some seating configurations L to better performance and while the microscopic composition of the crowd is the main driving Factor, the effects of initial positions are non negligible and definitely worth further study. 
+
+So obviously I've kind of simpled this down to some of the main key factors, but there are more details obviously, for example, what distributions we choose for each of the parameters, or how do we generate such config ation that have these properties right. So these are all things that are worth taking a closer look at. 
+
+I have the some links here to this case study and to sensitivity analysis as a whole, in case anyone wants to look, and here are also those promised references in case someone wants to pause the recording and also take a look, and with that I thank you for your attention and I'll gladly answer any questions or take any suggestions. But I guess that's after the second Speaker gets their turn. So thank you again. 
+
+Thank you very much, Shai. Thank you for a great talk and for the references at the end. I really happy that you put those as well, because I think there'll be people who are interested in following up. So yes, absolutely, we'll hold the questions until the end. I'd like to just invite yin to share your screen, please, and thank you for also staying on time, euri, and then we'll have plenty of time for questions. 
+
+So I'll turn it over to youim. Does that look good? Yep, we can see your screen. You just need to put it in full screen, full screen. Yeah, we can see that great. Thank you. Okay, so I will start. Good morning, everyone from Europe. Well, it's like good afternoon here from me in Asia. It's like 3:00 now and I'm usin Jang. I now work at the Hong Kong poly Technic University. 
+
+I'm a research assistant professor here and my research field is about like human behavior in fire, involving, like virtual reality, in evacuation choices and also evacuation modeling and some smart evacuation system. And maybe I would like to advertise me for a bit. 
+
+If you are like a PhD student and you want to visit us like within six months, like three months or six months, and the Hong Kong poly Technic university has very good scheme for the scholarship and those visiting programs. 
+
+So if you are interested in it, just drop me an email and today I'm going to talk about something about how to model evacuation behavior in Fire and I will introduce a couple of numerical approach using both computational fluid dynamics for fire development and cellular automa for the evacuation modeling. the content will be composed of like four parts. 
+
+The first I will introduce about some basic knowledge and the for the fire development and evacuation modeling, and second I will introduce the coupling model using cfd and cellular automated model. Then I will introduce a demonstration in a tunnel fire as my previous work. And last, we will discuss something about the limitation and the future work. Let's start from the evacuation Behavior. 
+
+Well, in fire safety design we have a very we have two important Concepts called aset and ret. the aset is the available s? E t refers to the time fire ignition till the whole environment is no longer suitable for people to move through, and R set is the required safe agress time well refers to the total time a PE a person needs to evacuate. As long as aset is larger than a is smaller than aset. 
+
+Then we could ensure people could evacuate safely. However, the timeline is quite simple, but things will get more complex if the timeline is combined with like 2D or 3D space, because people's movement is and their choices will be largely affected by fire, as we could see from this slide. Well evacuation movement could be simply are like clearly modeled by some, like platforms or softwares. however the safety model. 
+
+The fire development will pose a very important effect on people with like different temperature or visibility and even those thermal radiation and toxic gases. So how could we evaluate or like add those impact on people? Now we will we look at the fire development. 
+
+The fire development could be easily modeled by like the some software like fds and we just MH the whole space into those several grades and we use the N stos equation and those like those modeling could present us a clear figure about how those like fire develops with like temperature or we could have the visibility and then we know that how it works. 
+
+Now we want to add those impact onto the cellular automat model so that we could find how people move with the impact. thus we choose like cellular automic model. It is a regular grid of cells and each in one will have a finite number of states, such as on and off or like, occupied by person or empty, and the gr can be in aninite number of Dimensions like. We have three common sides. 
+
+The first is more neighborhood. It has eight choices, and the second have four choices, and the third one, hex, not great choices. They have six ones and they have the same distance, which is very popular these days. 
+
+However, we want to consider the fire development at the same time, so that we could only choose this one the more neighborhood, because the cfd machine is the rectangular Grace and in this way we could put them into the same grid and thus we could have their impact. 
+
+Together with this discrete space and we have the discrete dats, this kind of cellular automate model could have a computational speed very fast, so that it is appliable to those large scale buildings and is also easy to Define by the users. 
+
+In this way we could find that we could divide the whole space into several grades and for some grades we generate some occupants and those occupants will be influenced by the fire development and they will move to their adjacent cells from one time step to the next time step. In this way we could build a framework of fire evacuation model. 
+
+Firstly, we use the cftd model to get the fire development and we extract those parameters like temperature, visibility, essential and couple to the cellular automa models, the cellular automa models. Those people in the models will follow the predefined moving rules and the moving rules will update time best time according to the file development. In this way we will have a cou evacuation model. 
+
+So this is a detailed flow diagram of the culing fire and evacuation model for the preparation work. We build the 2D or 3D structure model and we import the model both into the fds software and the ca model for the fds models we do the configuration grid, matchine and scenario settings and start modeling and we will extract the key parameters, including those parameters which will affect people's movement at each time step and store it, and we will go on the fire simulation until the fire re until the time reaches the threshold and we will end it. 
+
+During the same time we will generate occupants and other leg Axis or the obstacles in the cellular automat model. firstly we will formulate a predefined moving rules without F and for evacuation movement and then for each time step we will import those key parameters and calculate their the force on each grid and update the predefined mum rules and calculate each occupant's aim and their destinations. 
+
+With this iteration we will calculate if all people evacuate or if no available cells for people to move, and this is the diagram of this coupling cell cfd and cellular automate model. There are some key elements of the evacuation modeling and the predefined rules. For example, we have the goals at the exit. 
+
+Suppose we have two exits here as a as a case and the obstacles are the fire source and also we will have other obstacles if it's a building and they have walls or doors and the potential movement will follow the more neighborhood, which means they could move to the eight agent sou or they could stand still. 
+
+And for the attractors we have the social influence by nearby agent and they are also attracted by the AIS and the repellers. We consider about the social influence is they are too near and also the fire range, which means like near the Fire Sauce they will have high temperature, will repel people to move close. 
+
+However, they will not a huge threat to people, and the exact moving rules in my framework is defined as this: for the attractors we consider attraction and alignment and for the repellers we consider fire cross and nearby agents. For this rule it's just a case or like a example, and the attractors and repellers, especially about their coefficient, should be adjusted for specific cases. 
+
+Below is a demonstration in a tunnel fire to see how the framework work. I use a tunnel standard section as a case and this section is like a 200 M length and 10 m wide and we sub. We set a fire Source in the middle of the tunnel with five megawatt and we have two axes with 100 in distance. 
+
+We could see from the fds modeling results that the this is the top view of this tunnel, with 2 met height and from 50 seconds to 350 seconds the temp temperature is increasing and the visibility is decreased, which means the central part near the Fire Sauce will be not available for people to leave. 
+
+In this case we could investigate, like the access layout or other things to optimize the tunnel, fire safety, for example, we investigate the exit locations and here we set seven types with the St one and we have a wider exit. then we choose type three, with two aits with 100 meter in distance and two nearer axis, two further AIS and two types of opposite exit. 
+
+And with this evacuation framework we test, we get the evacuation time and the successful percentage for those seven types, and we set four cases, like the low density of occupants, middle density of occupants, high density and we also investigate that the hand density of people, where we do not set a fire so that people could move freely without the influence of the fires obstacle, and for those seven types we get the results that the type seven has the shortest time and also with a high successful percentage, which means this kind of design is more beneficial to people's evacuation. 
+
+We could also compare those two curves about the blue line and the rose line. We could tell that without fire the evacuation time could be very quick, could be very quick, so that it means if we do not consider the fire during the evacuation. Maybe we will get a more, much more optimistic result and will cause potential injury for people. We also use it to investigate the effect of signages. We investigate two kinds of signages. 
+
+The first is the static sages, which means the sentage point to the nearest exit, and the other one is the dynamic sages, which means when a fire occurs in front of one exit and it will block this exit. There will be a Red Cross show. this exit is not available and we have some assumptions. Like a few people will move to the nearest exit, but they will find other exits if this one is blocked. 
+
+We also consider like the social influence like those kind of information, for example, this exit is not available, will spread among people and we want to know if this kind of dynamic Sage will have positive effect on evacuation. Here are the preliminary results about the evacuation time and we have like eight scenarios. 
+
+The first four on the left part is the four densities and they are without the signage, and the next four is the with the sage. if we take the solid curve and the dash curve of the blue color, we could see that one the social influence increase as the xais, the evacuation time will increase. It means that sometimes social influence May spread the wrong information and will delay people's response and their movement during the evacuation. 
+
+And we could make a contrast and see the right part with the dynamic signage and for the blue curve it is a apparent decline of the high density with sages with this kind of dynamic scages. That means in this kind of simulation the dynamic signage shows that exit a is not available, will spread among people and this will increase people's evacuation speed. Those are the above. Are the demonstration in a tunnel fire? 
+
+Well, those kind this framework is proposed. it has lot of limitations and some future work. We will do more about this. Firstly, as we as I said that the cellular automat model is a discrete methodology so that the computational speed is quite fast. However, the fds stimulation sometimes for fire May cost like several hours or several days. Therefore the real time evacuation prediction is not available. 
+
+Thus, in our group we are we do something about the using artificial intelligence with those data and the image to predict the fire development, so that with this we could have a faster speed of the cellular automa model. And the next key problem is the validation of this proposed model, and we are considering two approaches. 
+
+The first is to conduct full scale evacuation experiments with fire where we still suffering those ethical problems, and the second one we could compare with previous models so that we could see if it works well. And last thing we are considering is to combine those the evacuation prediction with those like digital twin system, because we could have a accurate and fast prediction of people's evacuation and their Movement. 
+
+
+
+Open discussion
+
+We could have a great estimation of people's distribution, especially in those large buildings, and then we could build a emergency digital twin system to show where people are. and above is other content about this. 
+
+Sharing for today and we I just am very honored to introduce the evacuation modeling with the cfd calculate, cfd modeling and the cellular automa model, and this is just a very basic work at the very first few steps, and we need more work in the future to validate if it works and to refine and to do more collaboration in the future. Thank you all. Thank you, thank you both. 
+
+I really appreciate your presentations today, so I have a few questions, but I see one in the chat. So oh we've got some claps as well for you. so for the first Speaker. 
+
+The question in the chat reads: as can we use sensitivity analysis as a tool at a much broader level to identify which variables are most important for different types of evacuation scenarios and applications, for example a road tunnel, a station, a theater, I E to run this type of analysis on many scenarios so that we know beforehand where to put our efforts in model input calibration, for example pre travel flow constraints, Etc. 
+
+Yes, thank you for the question. So yeah, the question was from enrio. Sorry, I should have mentioned that. Thank you, Eno for the question. So the sensitivity analysis. This is a very general kind of topic that we can employ to pretty much any scenario. 
+
+We think there is one small issue, maybe with the discrete inputs which if we have different like categorical variables such as types of scenario there it might maybe just be easier to use standard statistics right, because there is no these variances often kind of used a ordering of the variable right where they're very well suited to continuous variables. But with discrete cases such as these, we might just be better off using standard statistics right. 
+
+But if we have like continuous descriptors of the type of scenario, for example, then yes sensitivity analysis is, I think, perfect for these use cases. Or if there's the type of or the problem of U detecting the most important, or we could filter out the for example using the elementary effects or other screening methods. There are plenty. 
+
+We could basically filter out the variables which do not have like a significant effect, and those methods are designed to be very efficient, in the sense that we do not need too many model evaluations. So yes, I think definitely we could use those, but it's important to kind of keep in mind if we have a discrete variable or a continuous one in this case. Okay, great question. My question is for you Yen. 
+
+Maybe it's a couple parter, so I was just curious. I mean obviously you've develop this framework with the ca model, and when you develop a framework like that, you know you have to sort of you're starting with your own assumptions and data, and I kept sort of asking myself a couple of questions. Maybe I'll start with the first one. so why develop your own framework? 
+
+Does nothing else exist that can provide you what you're looking for? Coupling the fire with the you know people, mov and human behavior. That's my first question and the second question is you talked about validating, which I was really happy to see that, but then you talked about validating with real data and then you talked about the ethical issues. So that's good. So I was wondering why not? 
+
+Why you didn't U mention potentially using VR for validation? Oh okay, thanks, Erica, for your questions. Those are the very also the questions when I start to work this field myself, and the first question is to why to like for this framework. 
+
+It start like from the, I think, the last F fmtc conference, when I spoke to the engineers in pass vender, which, yeah, pass vender is the most one of the most common software we use for evacuation, modeling and calculation, and they also have the like, the parim, those software, which is the graphic user interface for the fds, and I asked them why you don't you don't put them together so that you could consider the influence of fire on people's movement, and they their answer is that they maybe they have more work or like a couple of years to develop this function, and I know that the fds and Evac, which is, I think, was developed by a research group in Finland. 
+
+They proposed this kind of function with the fds, and it works well at some point. however, I try to use this software, and I found they I don't know quite sure they didn't update it for like several years. So there's some most recent findings about like how people behave with the fires influence is not involved. 
+
+So that I'm thinking if I could like develop or write my own code so that I could evaluate the influence of fire on people during the modeling process. And then that's the. That's the start of this work. 
+
+And also with the development of fds and the like, the python function, we are now able to extract the key parameters of the F development in real time in each time step of fds, so that we could extract the like in 10 seconds or like in 20 seconds. we could know how the fire work develop or spread and then we could import those data to the to our model. 
+
+And the second question is about the validation one. And yeah, VR is a extremely good suggestion for the validation and I will consider about consider to use Virtual Reality to the validation in the future. I just missed the virtual reality aspect here. Thank. Thank you. Thanks for the comments on that. I think the one thing that I just kept thinking about. 
+
+When you're starting from scratch and you're having to put all of the behavioral aspects it's for some for like a model developed at Greenwich. They've been modeling that for many years. They've got a signage model in there. they, you know they've got the sort of interaction, at least on some level, with the fire. So it's hard to start from scratch when that you know. 
+
+Some of these other models that exist have been in development Vel mment for many years. But thank you. That's true. Thank you. So we have some other. Okay, great. So one question for the first speaker and then another question for the second speaker. Nikolai, would you like to say your own question or would you like me to read it out? No sure I can say it. Hi, everyone, great talk, you really interesting. 
+
+Thank you also you great talks. So anyway, my question is just about the use of surrogate models, and obviously these are really interesting and they really promising idea. I'm just wondering in your what you think whether you might not just need the same amount of compute power to construct a good surrogate model, for you know a complex crowd model as you would to do the sensitivity analysis in the first place. Yes U. 
+
+Thank you for the question. So I had a study in it's, actually in one of the linked references there, where I had something like nine variables or so and in that case the computation time needed to analytically kind of estimate these was just too much. It was prohibitive. So I did a surrogate model there and this is one of the exact things that I tested here. 
+
+So I had like a larger estimate with U of the an analytical approach, with, I believe, 128 or so samples and that's times the number of variables and times some other constants. So that was like a large data set and I trained some surrogate models on that and gave me some numbers which I think were really good. 
+
+But then I tested this same thing, but just on a very small sample of the data set, which had something like 256 times smaller number of samples, and the results were actually very similar. So in that case we could just use a very small sample of the data and train a surrogate model. obviously that depends on whether the function is or how nonlinear it is, what kind of circuit model we choose. 
+
+But in that case the results were very similar, with a many times smaller data set, and one more thing that I did in that study as well was that I first employed the screening method right, the elementary effects, which also requires us to run the model a couple of times, but that's comparatively a lot faster than the other methods, and so we also end up with a data set right and we could also train the CATE model on this data set and kind of Dodge the entire large, the expensive computation right, and it turns out that those results were also similar. 
+
+So basically whatever data we can use, we should use it, and in general it would still save us quite a lot of time. But obviously that depends. If we had a model like a neural network or something that's very complex and requires a lot of data to train, then yes, it would probably be more expensive than to just estimate the statistical way, but for like reasonably complex models, I think it would still save us a lot of time and for anything more than like three or four variables, I think this is way to go. So yes, that's a great question. 
+
+Thank you, can I follow up? Is that all right? Yes, of course. I don't know. Erica, am I allowed this very quick question because we have a few more, for I'll leave it to later. thank you, thank. Oh, I want to cut you off, Nikolai, go ahead, please do follow up. No, really I just go into surrogate model discussion. It's fine. It's fine. Honestly, let's move on. Let's move on. Fair enough, okay. 
+
+The next question is from enrio for Yin, why are you using a CA model rather than a continuous modeling approach? While computational time is an advantage, results are often very sensitive to the grid adopted. Thank you for ino's question. I will share some of my like my thoughts when I developed this framework. 
+
+Well, maybe we could also consider to use like continuous modeling like social force model at the start the it starts from the grid manchion of the fds because the fds they MCH the space into several grades and like with the similar with the size like0 4 meter and 4 Metter, and it's exactly like all similar to the body size of persons for the cellular automa models. 
+
+So it's very possible to match them together so that we could get the results of the fds for each grade and then we could import the results to the C CA models. And for the fds models actually the results are not exactly the exact, because they Ed the interpolation for their fire development so that they could only get the like, the results for each grade, and thus we input those results onto the cellular automated models. 
+
+And this is the first reason and the other one is, like I started from, for the tunnel, for the framework for whole tunnel design or like the optimization to test if the fire safety design or like the evacuation design is enough or not, and for the continuous model. 
+
+Actually the computational time sometimes is quite it's still long, like but the cellular autom model, especially for those like a large scale building or like a complex underground complex or Metro station, which are much faster. 
+
+So that at this time I choose the sell automat model for the both the grid machine and the computational speed, but for the following work as and also as Dury says that the sensitivity analysis, and I will consider like to if we could match the GD in a smaller scale, like the point1 meter, multiple Point me multiple point one meter and for one person we occupy like nine grades or 16 grades and see how it works and if the work, if the results are aligned with each other and maybe we could test if the, if the sensitivity analysis is fine with this with this setting. 
+
+Thank you, and is it good for you? Yeah, I guess it's the most computation and ease of implementation, the main driver. So that's what I guessed indeed, thank you. thank you. I will try, but anyway I will try the continuous model, because they are the two mainstream of the evacuation modeling. That's good. I also had the same sort of thought as enrio, so I think it' be good to try. The Continuous approach. 
+
+Last question, Simon, I'm happy to read it. If that oh okay, if you wanted to read your question or if you wanted me to read it up to you, okay, thank you. Thank you for the great talk. I'm a big fan of un considering uncertainties in simulations, so I appreciate your ideas. I would. I would be interested in the stochasticity of your model. So I assume that the crowd model that you used introduces stochastic effects. 
+
+So if you repeat a single simulation with for the exact same input, you get different results or slightly different results. And if this is the case, how do you account for this when running a sensitivity analysis, because this would this kind of uncertainty would propagate into the results right? Yes, that's a great question. Thank you. 
+
+So I believe this is still an active area of research here, because these sensitivity analysis models they generally expect a complex but deterministic model. So far. There I mean there exists some B basan. I think models that kind of try to use all the data that we have, but the methods that I presented here. 
+
+The standard approach currently is mostly to just average out or try to average out as much of the randomness as we can. So we work not with the actual like random variable but with the average or the estimate of the expected value. 
+
+But yeah that has quite a lot of problems, mostly that well we lose some of the information right by kind of drawing dropping the uncertainty, and this makes the models so much more expensive to or these methods so much more expensive to evaluate right. So in my case I ran the simulation with the different believe random seats and whatnot 10 times and averaged it to kind of get an estimate of the expected value. 
+
+But this is not perfectly efficient and this is one issue that I hope to tackle in the future: right to make use of as much data as we have and do not throw away the information about the uncertainty, because that, as you said, that might maybe might be significant and might affect the results completely. As kind of a standing for this, there's the law of total variance kind of uncertainty analysis that I presented just so. 
+
+We have an idea of how large the effect of the inherent Randomness is and kind of look at it from two different ways. So the uncertainty analysis is one thing and we get an idea of how strong this effect is. and then for the sensitivity analysis. 
+
+We kind of just work with the averages right and with we kind of omit the randomness from the model, which is kind of unfortunate, but it's the current general practice right now, so that's something I hope to address in the future. Thank you for the question. Thank you well. I'd like to thank you both for your presentations today. 
+
+I also would like to thank the audience for coming along and asking some really fantastic questions and making our speakers think of it today, which is good. There is another chat from Nikolai for you your, so you might want to take a look at that before we end today, and maybe you guys want to have some chatting offline about sensitivity analysis. So I want to thank everybody today for coming and we will. 
+
+This is this has been recorded and this will be up on the YouTube channel. Hopefully, if you're not already a member of our group, you'll consider signing up and getting involved and look for the next we webinar series after the summer has come and gone. So thank you all, thank our speakers and have a really great day evening afternoon, wherever you are. It was wonderful to see you. Thank you, thanks everyone. Thank you so much. Thank you, thank you, man, thank you, everyone, bye, bye. 
