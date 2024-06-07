@@ -18,6 +18,7 @@ from langchain.chains.question_answering import load_qa_chain
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_groq import ChatGroq
 from gnews import GNews
+from newspaper import Article
 
 default_groq_key = st.secrets["groq_key"]
 gmail_key = st.secrets["gmail_key"]
@@ -250,6 +251,12 @@ def search_news(keywords):
     news = gnews.get_news(keywords)
     return news
 
+def get_article_images(url):
+    article = Article(url)
+    article.download()
+    article.parse()
+    return article.images
+
 def main():
     # Initialize session state variables
     if 'groq_key_entered' not in st.session_state:
@@ -352,8 +359,11 @@ def main():
                             st.write(f"[Read more]({article['url']})")
                             st.write(f"Published at: {article['published date']}")
                             st.write(f"Source: [{article['publisher']['title']}]({article['publisher']['href']})")
-                            if 'image' in article:
-                                st.image(article['image'])
+                            
+                            # Fetch and display images
+                            images = get_article_images(article['url'])
+                            for img_url in images:
+                                st.image(img_url, width=400)
                     else:
                         st.write('No news articles found.')
         else: 
@@ -409,8 +419,11 @@ def main():
                                 st.write(f"[Read more]({article['url']})")
                                 st.write(f"Published at: {article['published date']}")
                                 st.write(f"Source: [{article['publisher']['title']}]({article['publisher']['href']})")
-                                if 'image' in article:
-                                    st.image(article['image'])
+                                
+                                # Fetch and display images
+                                images = get_article_images(article['url'])
+                                for img_url in images:
+                                    st.image(img_url, width=400)
                         else:
                             st.write('No news articles found.')
 

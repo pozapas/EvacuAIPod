@@ -10,3 +10,4 @@ faiss-gpu
 langchain_groq
 sentence-transformers
 gnews
+newspaper3k
