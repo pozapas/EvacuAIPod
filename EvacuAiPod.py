@@ -390,62 +390,64 @@ def main():
                 phrases = re.findall(r'"(.*?)"', keywords)
                 # Remove the phrases from the original input to get the remaining words
                 remaining_keywords = re.sub(r'"(.*?)"', '', keywords).split()
-
                 # List to hold DataFrames for intersection
                 filtered_dfs = []
-
                 # Search for each phrase
                 for phrase in phrases:
                     matching_df = df[df.apply(lambda x: x.str.contains(phrase, case=False, na=False)).any(axis=1)]
                     filtered_dfs.append(matching_df)
-
                 # Search for each remaining keyword
                 for keyword in remaining_keywords:
                     if keyword.strip():  # Ensure it's not an empty string
                         matching_df = df[df.apply(lambda x: x.str.contains(keyword, case=False, na=False)).any(axis=1)]
                         filtered_dfs.append(matching_df)
-
                 # Intersect all DataFrames to ensure all conditions are met
                 if filtered_dfs:
                     from functools import reduce
                     filtered_df = reduce(lambda left, right: pd.merge(left, right, how='inner'), filtered_dfs)
                 else:
-                    filtered_df = df                
+                    filtered_df = df
 
                 if not filtered_df.empty:
-                    # Create two tabs for 'Podcasts' and 'YouTube Videos'
-                    tab1, tab2, tab3 = st.tabs(['Podcasts', 'YouTube Videos', 'News'])
+                    # Store the filtered DataFrame in session state
                     st.session_state.filtered_df = filtered_df
-                    st.session_state['filtered_df'] = filtered_df
-                    # 'Podcasts' tab
-                    with tab1:
-                        display_podcasts(filtered_df[filtered_df['Type'] == 'Pod'], search_engine)
-                    # 'YouTube Videos' tab
-                    with tab2:
-                        display_youtube_videos(filtered_df[filtered_df['Type'] == 'YouTube'], search_engine)
-                    # 'News' tab
-                    with tab3:
-                        if 'news_results' in st.session_state:
-                            display_news(st.session_state.news_results)
-                        else:
-                            st.write('No news articles found.')
+                    st.session_state.keywords = keywords
                 else:
                     # Perform search in News section
                     news = search_news(keywords)
                     st.session_state.news_results = news
-                    st.session_state.filtered_df = filtered_df
-                    st.session_state['filtered_df'] = filtered_df
-                    if news:
-                        tab1, tab2, tab3 = st.tabs(['Podcasts', 'YouTube Videos', 'News'])
-                        with tab1:
-                            st.write("No podcasts found with the given keyword(s).")
-                        with tab2:
-                            st.write("No YouTube videos found with the given keyword(s).")
-                        with tab3:
-                            display_news(st.session_state.news_results)
-                    else:
-                        st.write("No podcasts, YouTube videos, or news articles found with the given keyword(s).")           
-            else:
+                    st.session_state.keywords = keywords
+                    st.session_state.filtered_df = pd.DataFrame()  # Empty DataFrame to indicate no podcasts or YouTube videos found
+
+        # Check if there are search results in the session state
+        if 'filtered_df' in st.session_state and 'keywords' in st.session_state:
+            filtered_df = st.session_state.filtered_df
+            keywords = st.session_state.keywords
+
+            # Create tabs for 'Podcasts', 'YouTube Videos', and 'News'
+            tab1, tab2, tab3 = st.tabs(['Podcasts', 'YouTube Videos', 'News'])
+
+            # 'Podcasts' tab
+            with tab1:
+                if not filtered_df.empty and 'Pod' in filtered_df['Type'].values:
+                    display_podcasts(filtered_df[filtered_df['Type'] == 'Pod'], search_engine)
+                else:
+                    st.write("No podcasts found with the given keyword(s).")
+
+            # 'YouTube Videos' tab
+            with tab2:
+                if not filtered_df.empty and 'YouTube' in filtered_df['Type'].values:
+                    display_youtube_videos(filtered_df[filtered_df['Type'] == 'YouTube'], search_engine)
+                else:
+                    st.write("No YouTube videos found with the given keyword(s).")
+
+            # 'News' tab
+            with tab3:
+                if 'news_results' in st.session_state and st.session_state.news_results:
+                    display_news(st.session_state.news_results)
+                else:
+                    st.write("No news articles found.")          
+        else:
                 st.write("")
     
         if 'filtered_df' in st.session_state and not st.session_state.filtered_df.empty:
