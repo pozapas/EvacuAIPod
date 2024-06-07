@@ -433,6 +433,8 @@ def main():
                     # Perform search in News section
                     news = search_news(keywords)
                     st.session_state.news_results = news
+                    st.session_state.filtered_df = filtered_df
+                    st.session_state['filtered_df'] = filtered_df
                     if news:
                         tab1, tab2, tab3 = st.tabs(['Podcasts', 'YouTube Videos', 'News'])
                         with tab1:
