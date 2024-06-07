@@ -419,23 +419,26 @@ def main():
                     st.session_state['filtered_df'] = filtered_df
                     # 'Podcasts' tab
                     with tab1:
-                        # Display podcasts
-                        display_podcasts(filtered_df[filtered_df['Type'] == 'Pod'],search_engine)
-
+                        display_podcasts(filtered_df[filtered_df['Type'] == 'Pod'], search_engine)
                     # 'YouTube Videos' tab
                     with tab2:
-                        # Display YouTube videos
-                        display_youtube_videos(filtered_df[filtered_df['Type'] == 'YouTube'],search_engine)
-
+                        display_youtube_videos(filtered_df[filtered_df['Type'] == 'YouTube'], search_engine)
+                    # 'News' tab
                     with tab3:
                         if 'news_results' in st.session_state:
                             display_news(st.session_state.news_results)
                         else:
                             st.write('No news articles found.')
-
                 else:
-                    st.write("No podcasts or YouTube videos found with the given keyword(s).")
-            
+                    # Perform search in News section
+                    news = search_news(keywords)
+                    st.session_state.news_results = news
+                    if news:
+                        tab1, tab2, tab3 = st.tabs(['Podcasts', 'YouTube Videos', 'News'])
+                        with tab3:
+                            display_news(news)
+                    else:
+                        st.write("No podcasts, YouTube videos, or news articles found with the given keyword(s).")           
             else:
                 st.write("")
     
