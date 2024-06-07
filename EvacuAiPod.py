@@ -17,7 +17,7 @@ from langchain_openai import OpenAI
 from langchain.chains.question_answering import load_qa_chain
 from langchain_community.embeddings import HuggingFaceEmbeddings
 from langchain_groq import ChatGroq
-from GNews import GNews
+from gnews import GNews
 
 default_groq_key = st.secrets["groq_key"]
 gmail_key = st.secrets["gmail_key"]
