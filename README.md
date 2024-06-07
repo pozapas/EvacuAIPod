@@ -6,7 +6,7 @@
 
 [EvacuAIPod](https://evacuaipod.streamlit.app/) is an innovative web application designed to enhance the podcast listening experience by integrating AI-powered features. It enables users to transcribe podcasts, engage in interactive conversations with the content, and explore podcasts related to crowd evacuation strategies and emergency preparedness.
 
-[![YouTube](https://img.shields.io/badge/YouTube-%23FF0000.svg?style=for-the-badge&logo=YouTube&logoColor=white)](https://www.youtube.com/watch?v=R0QH5rnfTxE)
+[![YouTube](https://img.shields.io/badge/YouTube-%23FF0000.svg?style=for-the-badge&logo=YouTube&logoColor=white)](https://www.youtube.com/watch?v=FoXzON4L7d4)
 
 ## Features
 
@@ -39,7 +39,8 @@
 - [x] Add Podcasts from YouTube
 - [x] User-Selectable Language Models for Embeddings and Chat
 - [x] Add fire engineering content
-- [ ] Add a subscription form
+- [x] Add a subscription form
+- [ ] Incorporate a fine-tuned LLM tailored for crowd evacuation and fire engineering scenarios
 
 ## Contributing
 Contributions, issues, and feature requests are welcome. Feel free to check [issues page](https://github.com/pozapas/EvacuAIPod/issues) for open issues or open a new issue.
