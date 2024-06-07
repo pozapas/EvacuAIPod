@@ -11,3 +11,5 @@ langchain_groq
 sentence-transformers
 gnews
 newspaper3k
+lxml
+lxml-html-clean
