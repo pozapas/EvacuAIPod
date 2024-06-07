@@ -399,6 +399,21 @@ def main():
                         # Display YouTube videos
                         display_youtube_videos(filtered_df[filtered_df['Type'] == 'YouTube'],search_engine)
 
+                    with tab3:
+                        # Display news articles
+                        news = search_news(keywords)
+                        if news:
+                            for i, article in enumerate(news[:10]):  # Display top 10 news articles
+                                st.subheader(f"{i + 1}. {article['title']}")
+                                st.write(article['description'])
+                                st.write(f"[Read more]({article['url']})")
+                                st.write(f"Published at: {article['published date']}")
+                                st.write(f"Source: [{article['publisher']['title']}]({article['publisher']['href']})")
+                                if 'image' in article:
+                                    st.image(article['image'])
+                        else:
+                            st.write('No news articles found.')
+
                 else:
                     st.write("No podcasts or YouTube videos found with the given keyword(s).")
             
