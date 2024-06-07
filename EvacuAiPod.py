@@ -250,6 +250,7 @@ gnews = GNews()
 # Search for news articles
 def search_news(keywords):
     news = gnews.get_news(keywords)
+    st.session_state.news_results = news
     return news
 
 # Get the first image from an article
@@ -262,6 +263,25 @@ def get_first_image(url):
         return images[0] if images else None
     except Exception as e:
         return None
+    
+def display_news(news):
+    if news:
+        for i, article in enumerate(news[:10]):  # Display top 10 news articles
+            col1, col2 = st.columns([1, 4])
+            with col1:
+                image_url = get_first_image(article['url'])
+                if image_url:
+                    st.image(image_url, width=150)
+                else:
+                    st.write("No image available.")
+            with col2:
+                st.subheader(f"{i + 1}. {article['title']}")
+                st.write(article['description'])
+                st.write(f"[Read more]({article['url']})")
+                st.write(f"Published at: {article['published date']}")
+                st.write(f"Source: [{article['publisher']['title']}]({article['publisher']['href']})")
+    else:
+        st.write('No news articles found.')
 
 def main():
     # Initialize session state variables
@@ -341,6 +361,9 @@ def main():
             keywords = st.text_input("**Enter keywords to search for podcasts. Separate multiple keywords with spaces. If you want to search for an exact phrase, enclose it in quotation marks.**")
             submit_button = st.form_submit_button(label='Search')
         st.markdown(":red-background[**Note:**] *The transcripts and keywords for the podcasts are generated automatically using AI. While we strive to ensure their accuracy, there may be some errors or omissions. If you notice any issues, please let us know so we can continue to improve our service.*")
+        if submit_button:
+            news = search_news(keywords)
+            st.session_state.news_results = news
         if 'filtered_df' in st.session_state and not st.session_state.filtered_df.empty and not keywords:
             # Create two tabs for 'Podcasts' and 'YouTube Videos'
                 tab1, tab2, tab3 = st.tabs(['Podcasts', 'YouTube Videos', 'News']) 
@@ -356,27 +379,11 @@ def main():
                     display_youtube_videos(filtered_df[filtered_df['Type'] == 'YouTube'],search_engine)
 
                 with tab3:
-                    # Display news articles
-                    news = search_news(keywords)
-                    if news:
-                        for i, article in enumerate(news[:10]):  # Display top 10 news articles
-                            col1, col2 = st.columns([1, 4])
-                            
-                            with col1:
-                                image_url = get_first_image(article['url'])
-                                if image_url:
-                                    st.image(image_url, width=150)
-                                else:
-                                    st.write("No image available.")
-                            
-                            with col2:
-                                st.subheader(f"{i + 1}. {article['title']}")
-                                st.write(article['description'])
-                                st.write(f"[Read more]({article['url']})")
-                                st.write(f"Published at: {article['published date']}")
-                                st.write(f"Source: [{article['publisher']['title']}]({article['publisher']['href']})")
+                    if 'news_results' in st.session_state:
+                        display_news(st.session_state.news_results)
                     else:
                         st.write('No news articles found.')
+
         else: 
             if keywords:
                 # Regular expression to find phrases enclosed in double quotes
@@ -421,25 +428,8 @@ def main():
                         display_youtube_videos(filtered_df[filtered_df['Type'] == 'YouTube'],search_engine)
 
                     with tab3:
-                        # Display news articles
-                        news = search_news(keywords)
-                        if news:
-                            for i, article in enumerate(news[:10]):  # Display top 10 news articles
-                                col1, col2 = st.columns([1, 4])
-                                
-                                with col1:
-                                    image_url = get_first_image(article['url'])
-                                    if image_url:
-                                        st.image(image_url, width=150)
-                                    else:
-                                        st.write("No image available.")
-                                
-                                with col2:
-                                    st.subheader(f"{i + 1}. {article['title']}")
-                                    st.write(article['description'])
-                                    st.write(f"[Read more]({article['url']})")
-                                    st.write(f"Published at: {article['published date']}")
-                                    st.write(f"Source: [{article['publisher']['title']}]({article['publisher']['href']})")
+                        if 'news_results' in st.session_state:
+                            display_news(st.session_state.news_results)
                         else:
                             st.write('No news articles found.')
 
@@ -464,9 +454,6 @@ def main():
                 if submit_button:
                     st.session_state.conversation_history = []
                     st.session_state.messages = []
-                    news = search_news(keywords)
-                    st.session_state.news_results = news
-                    st.session_state.news_keywords = keywords
                     try:
                         transcript1 = read_transcript(podcast_choice)
                         # Check if the selected podcast is of type 'Pod'
@@ -482,9 +469,7 @@ def main():
 
                     except Exception as e:
                         st.error(f"An error occurred: {e}")
-                elif 'news_results' in st.session_state:
-                    news = st.session_state.news_results
-                    keywords = st.session_state.news_keywords
+
             # If filtered_df isn't in session state or is empty, display a message
             st.write("")
     elif page == "Chat with Podcast":
