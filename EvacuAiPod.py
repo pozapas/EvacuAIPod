@@ -440,7 +440,7 @@ def main():
                         with tab2:
                             st.write("No YouTube videos found with the given keyword(s).")
                         with tab3:
-                            display_news(news)
+                            display_news(st.session_state.news_results)
                     else:
                         st.write("No podcasts, YouTube videos, or news articles found with the given keyword(s).")           
             else:
