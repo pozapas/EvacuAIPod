@@ -327,6 +327,8 @@ def main():
             st.session_state.groq_key_entered = True
         if openai_key:
             st.session_state.openai_key_entered = True
+        # Add a note about the API key
+        st.markdown(":red-background[**Note:**] When you input your API key, it’s stored on the client side (your browser or device). This means the API key is accessible only to you and the app itself. The app owner doesn’t have direct access to your API key.")
 
     # Add an "About" section in the sidebar
     expander = st.sidebar.expander("**About EvacuAIPod**")
