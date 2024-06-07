@@ -386,7 +386,7 @@ def main():
 
                 if not filtered_df.empty:
                     # Create two tabs for 'Podcasts' and 'YouTube Videos'
-                    tab1, tab2 = st.tabs(["Podcasts", "YouTube Videos"])
+                    tab1, tab2, tab3 = st.tabs(['Podcasts', 'YouTube Videos', 'News'])
                     st.session_state.filtered_df = filtered_df
                     st.session_state['filtered_df'] = filtered_df
                     # 'Podcasts' tab
