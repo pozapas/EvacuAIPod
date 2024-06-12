@@ -1,9 +1,10 @@
+[![EvacuAIPod](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://evacuaipod.streamlit.app/)
 # EvacuAIPod: AI-bot for Crowd Evacuation Podcasts
 
 <p align="center">
   <img src="https://github.com/pozapas/EvacuAIPod/blob/master/evacuaipod.png?raw=true" alt="Evacuaipod" style="width: 30%;">
 </p>
-[![EvacuAIPod](https://static.streamlit.io/badges/streamlit_badge_black_white.svg)](https://evacuaipod.streamlit.app/)
+
 is an innovative web application designed to enhance the podcast listening experience by integrating AI-powered features. It enables users to transcribe podcasts, engage in interactive conversations with the content, and explore podcasts related to crowd evacuation strategies and emergency preparedness.
 
 [![YouTube](https://img.shields.io/badge/YouTube-%23FF0000.svg?style=for-the-badge&logo=YouTube&logoColor=white)](https://www.youtube.com/watch?v=FoXzON4L7d4)
