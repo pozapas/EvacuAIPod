@@ -31,7 +31,7 @@
 3. Run the Streamlit app:
      
    ```bash
-   streamlit run app.py
+   streamlit run EvacuAiPod.py
    ```
    
 ## Future Enhancements
