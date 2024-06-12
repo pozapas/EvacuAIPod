@@ -6,7 +6,6 @@ langchain
 langchain_community
 langchain_openai
 faiss-cpu
-faiss-gpu
 langchain_groq
 sentence-transformers
 gnews
